@@ -1,0 +1,101 @@
+using Microsoft.EntityFrameworkCore;
+using Trackora.API.Data;
+using Trackora.API.DTOs;
+using Trackora.API.Models;
+using Trackora.API.Services.Interfaces; 
+namespace Trackora.API.Services
+{
+public class TimesheetService : ITimesheetService
+    {
+        private readonly AppDbContext _db;
+        private readonly INotificationService _notify;
+        public TimesheetService(AppDbContext db, INotificationService notify) { _db = db; _notify = notify; }
+ 
+       private IQueryable<Timesheet> Base()
+{
+    return _db.Timesheets
+        .Include(t => t.User)
+        .Include(t => t.Project)
+        .Include(t => t.Task)
+        .Where(t => !t.IsDeleted);
+}
+        public async Task<PagedResult<TimesheetDto>> GetAllAsync(PaginationQuery query, int? userId, int? projectId)
+        {
+            var q = Base();
+            if (userId.HasValue) q = q.Where(ts => ts.UserId == userId);
+            if (projectId.HasValue) q = q.Where(ts => ts.ProjectId == projectId);
+            if (!string.IsNullOrEmpty(query.Search)) q = q.Where(ts => ts.Description != null && ts.Description.Contains(query.Search));
+            var total = await q.CountAsync();
+            var items = (await q.OrderByDescending(ts => ts.Date)
+                .Skip((query.Page - 1) * query.PageSize).Take(query.PageSize).ToListAsync())
+                .Select(Map).ToList();
+            return new PagedResult<TimesheetDto> { Items = items, TotalCount = total, Page = query.Page, PageSize = query.PageSize };
+        }
+ 
+        public async Task<TimesheetDto> GetByIdAsync(int id) =>
+            Map(await Base().FirstOrDefaultAsync(ts => ts.Id == id) ?? throw new KeyNotFoundException("Timesheet not found."));
+ 
+        public async Task<TimesheetDto> CreateAsync(CreateTimesheetDto dto, int userId)
+        {
+            var ts = new Timesheet
+            {
+                UserId = userId, ProjectId = dto.ProjectId, TaskId = dto.TaskId,
+                Date = dto.Date, HoursWorked = dto.HoursWorked, Description = dto.Description
+            };
+            _db.Timesheets.Add(ts);
+            await _db.SaveChangesAsync();
+            return await GetByIdAsync(ts.Id);
+        }
+ 
+        public async Task<TimesheetDto> UpdateAsync(int id, UpdateTimesheetDto dto, int userId)
+        {
+            var ts = await _db.Timesheets.FindAsync(id) ?? throw new KeyNotFoundException("Timesheet not found.");
+            if (ts.UserId != userId) throw new UnauthorizedAccessException("Not your timesheet.");
+            if (ts.Status == "Approved") throw new InvalidOperationException("Cannot edit approved timesheet.");
+            if ((DateTime.UtcNow - ts.CreatedAt).TotalDays > 7) throw new InvalidOperationException("Cannot edit timesheet older than 7 days.");
+            ts.HoursWorked = dto.HoursWorked; ts.Description = dto.Description;
+            await _db.SaveChangesAsync();
+            return await GetByIdAsync(id);
+        }
+ 
+        public async Task DeleteAsync(int id, int userId)
+        {
+            var ts = await _db.Timesheets.FindAsync(id) ?? throw new KeyNotFoundException("Timesheet not found.");
+            if (ts.UserId != userId) throw new UnauthorizedAccessException("Not your timesheet.");
+            if (ts.Status == "Approved") throw new InvalidOperationException("Cannot delete approved timesheet.");
+            if ((DateTime.UtcNow - ts.CreatedAt).TotalDays > 7) throw new InvalidOperationException("Cannot delete timesheet older than 7 days.");
+            ts.IsDeleted = true;
+            await _db.SaveChangesAsync();
+        }
+ 
+        public async Task<TimesheetDto> ApproveAsync(int id, string status, int leaderId)
+        {
+            var ts = await _db.Timesheets.FindAsync(id) ?? throw new KeyNotFoundException("Timesheet not found.");
+            ts.Status = status;
+            await _db.SaveChangesAsync();
+            await _notify.CreateAsync(ts.UserId, $"Your timesheet for {ts.Date:yyyy-MM-dd} has been {status.ToLower()}.");
+            return await GetByIdAsync(id);
+        }
+ 
+        public async Task<List<TimesheetDto>> GetByTeamAsync(int teamId)
+        {
+            var memberIds = await _db.TeamMembers.Where(tm => tm.TeamId == teamId).Select(tm => tm.UserId).ToListAsync();
+            return (await Base().Where(ts => memberIds.Contains(ts.UserId)).OrderByDescending(ts => ts.Date).ToListAsync())
+                .Select(Map).ToList();
+        }
+ 
+        public async Task<List<TimesheetDto>> GetMyTimesheetsAsync(int userId) =>
+            (await Base().Where(ts => ts.UserId == userId).OrderByDescending(ts => ts.Date).ToListAsync())
+            .Select(Map).ToList();
+ 
+        private static TimesheetDto Map(Timesheet ts) => new()
+        {
+            Id = ts.Id, UserId = ts.UserId, UserName = $"{ts.User.FirstName} {ts.User.LastName}",
+            ProjectId = ts.ProjectId, ProjectName = ts.Project.Name,
+            TaskId = ts.TaskId, TaskTitle = ts.Task.Title,
+            Date = ts.Date, HoursWorked = ts.HoursWorked, Description = ts.Description,
+            Status = ts.Status, CreatedAt = ts.CreatedAt,
+            CanEdit = ts.Status != "Approved" && (DateTime.UtcNow - ts.CreatedAt).TotalDays <= 7
+        };
+    }
+}
