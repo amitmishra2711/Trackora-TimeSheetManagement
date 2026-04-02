@@ -17,9 +17,6 @@ namespace Trackora.API.Data
         public DbSet<DailyReport> DailyReports => Set<DailyReport>();
         public DbSet<ReportDetail> ReportDetails => Set<ReportDetail>();
         public DbSet<ExportLog> ExportLogs => Set<ExportLog>();
-        public DbSet<Message> Messages => Set<Message>();
-        public DbSet<Notification> Notifications => Set<Notification>();
-        public DbSet<ActivityLog> ActivityLogs => Set<ActivityLog>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -76,20 +73,9 @@ namespace Trackora.API.Data
                 .HasForeignKey(r => r.LeaderId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Message → Sender (restrict)
-            modelBuilder.Entity<Message>()
-                .HasOne(m => m.Sender)
-                .WithMany()
-                .HasForeignKey(m => m.SenderId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            // Message → Receiver nullable
-            modelBuilder.Entity<Message>()
-                .HasOne(m => m.Receiver)
-                .WithMany()
-                .HasForeignKey(m => m.ReceiverId)
-                .OnDelete(DeleteBehavior.Restrict);
-
+         
+         
+            
             // Seed Admin user (password: Admin@123)
             modelBuilder.Entity<User>().HasData(new User
             {

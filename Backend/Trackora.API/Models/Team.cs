@@ -16,6 +16,5 @@ namespace Trackora.API.Models
         public ICollection<TeamMember> TeamMembers { get; set; } = new List<TeamMember>();
         public ICollection<ProjectTeam> ProjectTeams { get; set; } = new List<ProjectTeam>();
         public ICollection<DailyReport> DailyReports { get; set; } = new List<DailyReport>();
-        public ICollection<Message> Messages { get; set; } = new List<Message>();
     }
 }

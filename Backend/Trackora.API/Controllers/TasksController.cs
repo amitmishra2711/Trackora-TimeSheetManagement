@@ -26,5 +26,10 @@ namespace Trackora.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateTaskDto dto) =>
             Ok(await _tasks.CreateAsync(dto, CurrentUserId));
+
+        [HttpPatch("{id}/status")]
+        public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateTaskStatusDto dto) =>
+        Ok(await _tasks.UpdateStatusAsync(id, dto.Status));
     }
+
 }

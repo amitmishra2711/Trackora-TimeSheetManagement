@@ -9,12 +9,11 @@ namespace Trackora.API.Controllers
     public class ProjectsController : BaseController
     {
         private readonly IProjectService _projects;
-        private readonly IActivityLogService _log;
 
-        public ProjectsController(IProjectService projects, IActivityLogService log)
+        public ProjectsController(IProjectService projects)
         {
             _projects = projects;
-            _log = log;
+     
         }
 
         [HttpGet]
@@ -33,7 +32,6 @@ namespace Trackora.API.Controllers
         public async Task<IActionResult> Create([FromBody] CreateProjectDto dto)
         {
             var result = await _projects.CreateAsync(dto, CurrentUserId);
-            await _log.LogAsync(CurrentUserId, "CreateProject", $"Created project {dto.Name}");
             return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
         }
 

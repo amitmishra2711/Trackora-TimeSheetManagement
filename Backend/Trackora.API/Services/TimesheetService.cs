@@ -8,8 +8,7 @@ namespace Trackora.API.Services
 public class TimesheetService : ITimesheetService
     {
         private readonly AppDbContext _db;
-        private readonly INotificationService _notify;
-        public TimesheetService(AppDbContext db, INotificationService notify) { _db = db; _notify = notify; }
+        public TimesheetService(AppDbContext db) { _db = db; }
  
        private IQueryable<Timesheet> Base()
 {
@@ -73,7 +72,6 @@ public class TimesheetService : ITimesheetService
             var ts = await _db.Timesheets.FindAsync(id) ?? throw new KeyNotFoundException("Timesheet not found.");
             ts.Status = status;
             await _db.SaveChangesAsync();
-            await _notify.CreateAsync(ts.UserId, $"Your timesheet for {ts.Date:yyyy-MM-dd} has been {status.ToLower()}.");
             return await GetByIdAsync(id);
         }
  

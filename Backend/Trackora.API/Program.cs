@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Trackora.API.Data;
 using Trackora.API.Helpers;
-using Trackora.API.Hubs;
+
 using Trackora.API.Middleware;
 using Trackora.API.Services;
 using Trackora.API.Services.Interfaces;
@@ -55,9 +55,7 @@ builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<ITimesheetService, TimesheetService>();
 builder.Services.AddScoped<IReportService, ReportService>();
-builder.Services.AddScoped<IMessageService, MessageService>();
-builder.Services.AddScoped<INotificationService, NotificationService>();
-builder.Services.AddScoped<IActivityLogService, ActivityLogService>();
+
 
 // ─── SignalR ──────────────────────────────────────────────
 builder.Services.AddSignalR();
@@ -117,7 +115,7 @@ app.UseCors("AllowReact");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-app.MapHub<ChatHub>("/hubs/chat");
+
 
 // ─── Auto-migrate on startup ──────────────────────────────
 using (var scope = app.Services.CreateScope())

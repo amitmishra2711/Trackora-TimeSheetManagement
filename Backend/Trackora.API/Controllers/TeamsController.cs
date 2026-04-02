@@ -9,13 +9,13 @@ namespace Trackora.API.Controllers
     public class TeamsController : BaseController
     {
         private readonly ITeamService _teams;
-        private readonly IActivityLogService _log;
 
-        public TeamsController(ITeamService teams, IActivityLogService log)
+        public TeamsController(ITeamService teams)
         {
             _teams = teams;
-            _log = log;
         }
+
+       
 
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] PaginationQuery q) =>
@@ -37,7 +37,6 @@ namespace Trackora.API.Controllers
         public async Task<IActionResult> Create([FromBody] CreateTeamDto dto)
         {
             var result = await _teams.CreateAsync(dto, CurrentUserId);
-            await _log.LogAsync(CurrentUserId, "CreateTeam", $"Created team {dto.Name}");
             return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
         }
 

@@ -9,12 +9,10 @@ namespace Trackora.API.Controllers
     public class UsersController : BaseController
     {
         private readonly IUserService _users;
-        private readonly IActivityLogService _log;
 
-        public UsersController(IUserService users, IActivityLogService log)
+        public UsersController(IUserService users)
         {
             _users = users;
-            _log = log;
         }
 
         [HttpGet, Authorize(Roles = "Admin")]
@@ -37,7 +35,6 @@ namespace Trackora.API.Controllers
         public async Task<IActionResult> Create([FromBody] CreateUserDto dto)
         {
             var result = await _users.CreateAsync(dto);
-            await _log.LogAsync(CurrentUserId, "CreateUser", $"Created user {dto.Email}");
             return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
         }
 
@@ -45,7 +42,6 @@ namespace Trackora.API.Controllers
         public async Task<IActionResult> Update(int id, [FromBody] UpdateUserDto dto)
         {
             var result = await _users.UpdateAsync(id, dto);
-            await _log.LogAsync(CurrentUserId, "UpdateUser", $"Updated user {id}");
             return Ok(result);
         }
 
@@ -53,7 +49,6 @@ namespace Trackora.API.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             await _users.DeleteAsync(id);
-            await _log.LogAsync(CurrentUserId, "DeleteUser", $"Deleted user {id}");
             return NoContent();
         }
     }
