@@ -1,18 +1,16 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: 'http://localhost:5244/api',
   headers: { 'Content-Type': 'application/json' }
 })
 
-// Attach token to every request
 api.interceptors.request.use(cfg => {
   const token = localStorage.getItem('token')
   if (token) cfg.headers.Authorization = `Bearer ${token}`
   return cfg
 })
 
-// Handle 401 globally
 api.interceptors.response.use(
   res => res,
   err => {
@@ -27,14 +25,12 @@ api.interceptors.response.use(
 
 export default api
 
-// ─── Auth ─────────────────────────────────────────────────
 export const authApi = {
   login: (data) => api.post('/auth/login', data),
   register: (data) => api.post('/auth/register', data),
   me: () => api.get('/auth/me')
 }
 
-// ─── Users ────────────────────────────────────────────────
 export const usersApi = {
   getAll: (params) => api.get('/users', { params }),
   getById: (id) => api.get(`/users/${id}`),
@@ -45,7 +41,6 @@ export const usersApi = {
   delete: (id) => api.delete(`/users/${id}`)
 }
 
-// ─── Teams ────────────────────────────────────────────────
 export const teamsApi = {
   getAll: (params) => api.get('/teams', { params }),
   getById: (id) => api.get(`/teams/${id}`),
@@ -58,7 +53,6 @@ export const teamsApi = {
   removeMember: (teamId, userId) => api.delete(`/teams/${teamId}/members/${userId}`)
 }
 
-// ─── Projects ─────────────────────────────────────────────
 export const projectsApi = {
   getAll: (params) => api.get('/projects', { params }),
   getById: (id) => api.get(`/projects/${id}`),
@@ -70,7 +64,6 @@ export const projectsApi = {
   removeTeam: (projectId, teamId) => api.delete(`/projects/${projectId}/teams/${teamId}`)
 }
 
-// ─── Tasks ────────────────────────────────────────────────
 export const tasksApi = {
   getAll: (params) => api.get('/tasks', { params }),
   getById: (id) => api.get(`/tasks/${id}`),
@@ -81,8 +74,6 @@ export const tasksApi = {
   updateStatus: (id, status) => api.patch(`/tasks/${id}/status`, { status }),
   delete: (id) => api.delete(`/tasks/${id}`)
 }
-
-// ─── Timesheets ───────────────────────────────────────────
 export const timesheetsApi = {
   getAll: (params) => api.get('/timesheets', { params }),
   getMine: () => api.get('/timesheets/my'),
@@ -94,29 +85,10 @@ export const timesheetsApi = {
   approve: (id, status) => api.patch(`/timesheets/${id}/approve`, { status })
 }
 
-// ─── Reports ──────────────────────────────────────────────
 export const reportsApi = {
   getAll: (teamId) => api.get('/reports', { params: { teamId } }),
   getById: (id) => api.get(`/reports/${id}`),
   create: (data) => api.post('/reports', data),
   exportExcel: (params) => api.get('/reports/export/excel', { params, responseType: 'blob' }),
   exportPdf: (params) => api.get('/reports/export/pdf', { params, responseType: 'blob' })
-}
-
-// ─── Messages ─────────────────────────────────────────────
-export const messagesApi = {
-  getDirect: (otherId) => api.get(`/messages/direct/${otherId}`),
-  getTeam: (teamId) => api.get(`/messages/team/${teamId}`)
-}
-
-// ─── Notifications ────────────────────────────────────────
-export const notificationsApi = {
-  getAll: () => api.get('/notifications'),
-  markRead: (id) => api.patch(`/notifications/${id}/read`),
-  markAllRead: () => api.patch('/notifications/read-all')
-}
-
-// ─── Activity ─────────────────────────────────────────────
-export const activityApi = {
-  getAll: (params) => api.get('/activity', { params })
 }

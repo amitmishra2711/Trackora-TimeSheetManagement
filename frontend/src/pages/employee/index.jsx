@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react'
-import { tasksApi, timesheetsApi, projectsApi } from '../../api'
+import { tasksApi, timesheetsApi } from '../../api'
 import { useAuth } from '../../context/AuthContext'
-import { StatCard, Spinner, EmptyState, StatusBadge, PageHeader, Modal } from '../../components/common'
-import { CheckSquare, Clock, FolderKanban, TrendingUp, CheckCircle2 } from 'lucide-react'
+import { StatCard, Spinner, EmptyState, StatusBadge, PageHeader } from '../../components/common'
+import { CheckSquare, Clock, TrendingUp, CheckCircle2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
-// ─── EMPLOYEE DASHBOARD ───────────────────────────────────
 export function EmployeeDashboard() {
   const { user } = useAuth()
   const [tasks, setTasks] = useState([])
@@ -46,7 +45,6 @@ export function EmployeeDashboard() {
         <StatCard label="Hours This Week" value={`${thisWeekHours.toFixed(1)}h`} icon={Clock} color="blue" />
       </div>
 
-      {/* My Tasks */}
       <div className="card">
         <div className="px-5 py-4 border-b border-gray-100">
           <h3 className="font-semibold text-gray-900">My Tasks</h3>
@@ -73,7 +71,6 @@ export function EmployeeDashboard() {
           )}
       </div>
 
-      {/* Recent Timesheets */}
       <div className="card">
         <div className="px-5 py-4 border-b border-gray-100">
           <h3 className="font-semibold text-gray-900">Recent Timesheets</h3>
@@ -102,7 +99,6 @@ export function EmployeeDashboard() {
   )
 }
 
-// ─── EMPLOYEE TASKS PAGE ──────────────────────────────────
 export function EmployeeTasksPage() {
   const [tasks, setTasks] = useState([])
   const [loading, setLoading] = useState(true)

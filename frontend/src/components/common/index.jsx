@@ -1,6 +1,5 @@
 import { X, ChevronLeft, ChevronRight, Loader2, InboxIcon } from 'lucide-react'
 
-// ─── Modal ────────────────────────────────────────────────
 export function Modal({ open, onClose, title, children, size = 'md' }) {
   if (!open) return null
   const sizes = { sm: 'max-w-md', md: 'max-w-lg', lg: 'max-w-2xl', xl: 'max-w-4xl' }
@@ -19,7 +18,6 @@ export function Modal({ open, onClose, title, children, size = 'md' }) {
   )
 }
 
-// ─── Confirm Dialog ───────────────────────────────────────
 export function ConfirmDialog({ open, onClose, onConfirm, title, message, loading }) {
   if (!open) return null
   return (
@@ -38,12 +36,10 @@ export function ConfirmDialog({ open, onClose, onConfirm, title, message, loadin
   )
 }
 
-// ─── Spinner ──────────────────────────────────────────────
 export function Spinner({ size = 20, className = '' }) {
   return <Loader2 size={size} className={`animate-spin ${className}`} />
 }
 
-// ─── Badge ────────────────────────────────────────────────
 export function StatusBadge({ status }) {
   const map = {
     Pending: 'badge-pending', Approved: 'badge-approved', Rejected: 'badge-rejected',
@@ -57,7 +53,6 @@ export function StatusBadge({ status }) {
   return <span className={map[status] || 'badge bg-gray-100 text-gray-700'}>{status}</span>
 }
 
-// ─── Pagination ───────────────────────────────────────────
 export function Pagination({ page, totalPages, onPage }) {
   if (totalPages <= 1) return null
   return (
@@ -65,12 +60,9 @@ export function Pagination({ page, totalPages, onPage }) {
       <button onClick={() => onPage(page - 1)} disabled={page === 1} className="btn-secondary px-2 py-1">
         <ChevronLeft size={16} />
       </button>
-      {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => i + 1).map(p => (
-        <button key={p} onClick={() => onPage(p)}
-          className={`w-8 h-8 rounded-lg text-sm font-medium ${p === page ? 'bg-indigo-600 text-white' : 'hover:bg-gray-100 text-gray-600'}`}>
-          {p}
-        </button>
-      ))}
+      <span className="text-sm font-medium text-gray-700">
+        Page {page} of {totalPages}
+      </span>
       <button onClick={() => onPage(page + 1)} disabled={page === totalPages} className="btn-secondary px-2 py-1">
         <ChevronRight size={16} />
       </button>
@@ -78,7 +70,6 @@ export function Pagination({ page, totalPages, onPage }) {
   )
 }
 
-// ─── Stat Card ────────────────────────────────────────────
 export function StatCard({ label, value, icon: Icon, color = 'indigo', sub }) {
   const colors = {
     indigo: 'bg-indigo-50 text-indigo-600',
@@ -102,7 +93,6 @@ export function StatCard({ label, value, icon: Icon, color = 'indigo', sub }) {
   )
 }
 
-// ─── Empty State ──────────────────────────────────────────
 export function EmptyState({ message = 'No data found', icon: Icon = InboxIcon }) {
   return (
     <div className="flex flex-col items-center justify-center py-16 text-gray-400">
@@ -112,7 +102,6 @@ export function EmptyState({ message = 'No data found', icon: Icon = InboxIcon }
   )
 }
 
-// ─── Form Field ───────────────────────────────────────────
 export function Field({ label, error, children }) {
   return (
     <div className="mb-4">
@@ -123,7 +112,6 @@ export function Field({ label, error, children }) {
   )
 }
 
-// ─── Page Header ─────────────────────────────────────────
 export function PageHeader({ title, subtitle, action }) {
   return (
     <div className="flex items-center justify-between mb-6">
@@ -136,7 +124,6 @@ export function PageHeader({ title, subtitle, action }) {
   )
 }
 
-// ─── Search Input ─────────────────────────────────────────
 export function SearchInput({ value, onChange, placeholder = 'Search...' }) {
   return (
     <input

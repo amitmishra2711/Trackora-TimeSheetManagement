@@ -1,30 +1,25 @@
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import Layout from './components/layout/Layout'
 
 // Auth
 import Login from './pages/auth/Login'
 
-// Admin
+
 import AdminDashboard from './pages/admin/Dashboard'
 import UsersPage from './pages/admin/Users'
 import { TeamsPage, ProjectsPage } from './pages/admin/TeamsProjects'
 import TasksPage from './pages/admin/Tasks'
 import TimesheetsPage from './pages/admin/Timesheets'
-import { ReportsPage, ActivityLogPage } from './pages/admin/Reports'
-
-// Leader
+import { ReportsPage } from './pages/admin/Reports'
 import {
   LeaderDashboard, LeaderTeamPage, LeaderReportPage
 } from './pages/leader'
 
-// Employee
+
 import { EmployeeDashboard, EmployeeTasksPage } from './pages/employee'
+import { LandingPage } from './components/LandingPage'
 
-// Chat (shared)
-import ChatPage from './pages/chat/ChatPage'
-
-// ─── Protected Route ──────────────────────────────────────
 function ProtectedRoute({ children, roles }) {
   const { user } = useAuth()
   const location = useLocation()
@@ -37,21 +32,22 @@ function ProtectedRoute({ children, roles }) {
   return <Layout>{children}</Layout>
 }
 
-// ─── Role redirect ────────────────────────────────────────
 function HomeRedirect() {
   const { user } = useAuth()
-  if (!user) return <Navigate to="/login" replace />
+  if (!user) return 
+  <Navigate to="/login" replace />
   const routes = { Admin: '/admin', Leader: '/leader', Employee: '/employee' }
   return <Navigate to={routes[user.role] || '/login'} replace />
 }
 
-// ─── App ──────────────────────────────────────────────────
 function AppRoutes() {
   return (
     <Routes>
       {/* Public */}
       <Route path="/login" element={<Login />} />
-      <Route path="/" element={<HomeRedirect />} />
+     <Route path="/" element={<LandingPageWrapper />} />
+                        <Route path="/login" element={<LoginWrapper />} />
+                        <Route path="*" element={<Navigate to="/" />} />
 
       {/* Admin */}
       <Route path="/admin" element={<ProtectedRoute roles={['Admin']}><AdminDashboard /></ProtectedRoute>} />
@@ -61,22 +57,20 @@ function AppRoutes() {
       <Route path="/admin/tasks" element={<ProtectedRoute roles={['Admin']}><TasksPage /></ProtectedRoute>} />
       <Route path="/admin/timesheets" element={<ProtectedRoute roles={['Admin']}><TimesheetsPage /></ProtectedRoute>} />
       <Route path="/admin/reports" element={<ProtectedRoute roles={['Admin']}><ReportsPage /></ProtectedRoute>} />
-      <Route path="/admin/activity" element={<ProtectedRoute roles={['Admin']}><ActivityLogPage /></ProtectedRoute>} />
-      <Route path="/admin/chat" element={<ProtectedRoute roles={['Admin']}><ChatPage /></ProtectedRoute>} />
 
-      {/* Leader */}
+{/* Leaders Routes */}
       <Route path="/leader" element={<ProtectedRoute roles={['Leader']}><LeaderDashboard /></ProtectedRoute>} />
       <Route path="/leader/team" element={<ProtectedRoute roles={['Leader']}><LeaderTeamPage /></ProtectedRoute>} />
       <Route path="/leader/tasks" element={<ProtectedRoute roles={['Leader']}><TasksPage /></ProtectedRoute>} />
       <Route path="/leader/timesheets" element={<ProtectedRoute roles={['Leader']}><TimesheetsPage /></ProtectedRoute>} />
       <Route path="/leader/reports" element={<ProtectedRoute roles={['Leader']}><LeaderReportPage /></ProtectedRoute>} />
-      <Route path="/leader/chat" element={<ProtectedRoute roles={['Leader']}><ChatPage /></ProtectedRoute>} />
+  
 
       {/* Employee */}
       <Route path="/employee" element={<ProtectedRoute roles={['Employee']}><EmployeeDashboard /></ProtectedRoute>} />
       <Route path="/employee/tasks" element={<ProtectedRoute roles={['Employee']}><EmployeeTasksPage /></ProtectedRoute>} />
       <Route path="/employee/timesheets" element={<ProtectedRoute roles={['Employee']}><TimesheetsPage /></ProtectedRoute>} />
-      <Route path="/employee/chat" element={<ProtectedRoute roles={['Employee']}><ChatPage /></ProtectedRoute>} />
+     
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />
@@ -90,4 +84,14 @@ export default function App() {
       <AppRoutes />
     </AuthProvider>
   )
+}
+
+function LandingPageWrapper() {
+    const navigate = useNavigate();
+    return <LandingPage onGetStarted={() => navigate("/login")} />;
+}
+
+function LoginWrapper() {
+    const navigate = useNavigate();
+    return <Login onLogin={() => navigate("/dashboard", { replace: true })} />;
 }

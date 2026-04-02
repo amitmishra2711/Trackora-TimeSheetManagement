@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react'
-import { reportsApi, activityApi } from '../../api'
-import { PageHeader, Spinner, EmptyState, StatusBadge, Modal } from '../../components/common'
-import { Download, FileSpreadsheet, FileText, Eye } from 'lucide-react'
+import { reportsApi } from '../../api'
+import { PageHeader, Spinner, EmptyState  , Modal } from '../../components/common'
+import {  FileSpreadsheet, FileText, Eye } from 'lucide-react'
 import toast from 'react-hot-toast'
 
-// ─── REPORTS PAGE ─────────────────────────────────────────
 export function ReportsPage() {
   const [reports, setReports] = useState([])
   const [loading, setLoading] = useState(true)
@@ -40,7 +39,6 @@ export function ReportsPage() {
     <div className="space-y-6">
       <PageHeader title="Reports" subtitle="Daily reports and exports" />
 
-      {/* Export Panel */}
       <div className="card p-5">
         <h3 className="font-semibold text-gray-900 mb-4">Export Timesheets</h3>
         <div className="flex flex-wrap gap-4 items-end">
@@ -124,42 +122,3 @@ export function ReportsPage() {
   )
 }
 
-// ─── ACTIVITY LOG PAGE ────────────────────────────────────
-export function ActivityLogPage() {
-  const [data, setData] = useState({ items: [], totalPages: 1 })
-  const [page, setPage] = useState(1)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    setLoading(true)
-    activityApi.getAll({ page, pageSize: 20 })
-      .then(r => setData(r.data))
-      .catch(() => toast.error('Failed to load'))
-      .finally(() => setLoading(false))
-  }, [page])
-
-  return (
-    <div>
-      <PageHeader title="Activity Log" subtitle="All system actions" />
-      <div className="card">
-        <div className="table-wrap rounded-xl">
-          <table className="table">
-            <thead><tr><th>User</th><th>Action</th><th>Details</th><th>Time</th></tr></thead>
-            <tbody>
-              {loading ? <tr><td colSpan={4} className="text-center py-10"><Spinner /></td></tr>
-                : data.items?.length === 0 ? <tr><td colSpan={4}><EmptyState message="No activity yet" /></td></tr>
-                  : data.items?.map(a => (
-                    <tr key={a.id}>
-                      <td className="font-medium">{a.userName}</td>
-                      <td><span className="badge bg-indigo-50 text-indigo-700">{a.action}</span></td>
-                      <td className="text-gray-500 max-w-xs truncate">{a.details || '—'}</td>
-                      <td className="text-gray-500 text-xs">{new Date(a.createdAt).toLocaleString()}</td>
-                    </tr>
-                  ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  )
-}

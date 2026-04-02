@@ -31,7 +31,6 @@ export default function AdminDashboard() {
         })
         setRecentTimesheets(timesheets.data.items || [])
 
-        // Generate chart data from timesheets
         const allTs = (await timesheetsApi.getAll({ page: 1, pageSize: 100 })).data.items || []
         const pending = allTs.filter(t => t.status === 'Pending').length
         const approved = allTs.filter(t => t.status === 'Approved').length
@@ -42,7 +41,6 @@ export default function AdminDashboard() {
           { name: 'Rejected', value: rejected },
         ])
 
-        // Hours by project (top 5)
         const byProject = {}
         allTs.forEach(ts => {
           byProject[ts.projectName] = (byProject[ts.projectName] || 0) + Number(ts.hoursWorked)
@@ -63,7 +61,6 @@ export default function AdminDashboard() {
         <p className="text-sm text-gray-500 mt-0.5">Overview of your organization</p>
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard label="Total Users" value={stats?.users ?? 0} icon={Users} color="indigo" />
         <StatCard label="Teams" value={stats?.teams ?? 0} icon={UsersRound} color="blue" />
@@ -71,7 +68,6 @@ export default function AdminDashboard() {
         <StatCard label="Tasks" value={stats?.tasks ?? 0} icon={CheckSquare} color="green" />
       </div>
 
-      {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="card p-5">
           <h3 className="font-semibold text-gray-900 mb-4">Hours by Project</h3>
@@ -104,7 +100,6 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Recent Timesheets */}
       <div className="card">
         <div className="px-5 py-4 border-b border-gray-100">
           <h3 className="font-semibold text-gray-900">Recent Timesheets</h3>

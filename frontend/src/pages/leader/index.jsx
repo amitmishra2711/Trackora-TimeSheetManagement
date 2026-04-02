@@ -4,8 +4,6 @@ import { useAuth } from '../../context/AuthContext'
 import { StatCard, Spinner, EmptyState, StatusBadge, Modal, PageHeader } from '../../components/common'
 import { Users, CheckSquare, Clock, FileText, Plus, UserMinus } from 'lucide-react'
 import toast from 'react-hot-toast'
-import TimesheetsPage from '../admin/Timesheets'
-import TasksPage from '../admin/Tasks'
 
 // ─── LEADER DASHBOARD ────────────────────────────────────
 export function LeaderDashboard() {
