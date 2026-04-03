@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emailjs/browser": "^4.4.1",
     "@microsoft/signalr": "^8.0.0",
     "axios": "^1.6.7",
     "clsx": "^2.1.1",
@@ -16,10 +17,12 @@
     "lucide-react": "^0.344.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-hot-toast": "^2.4.1",
+    "react-hot-toast": "^2.6.0",
     "react-router-dom": "^6.22.0",
+    "react-toastify": "^11.0.5",
     "recharts": "^2.12.2",
-    "tailwind-merge": "^3.5.0"
+    "tailwind-merge": "^3.5.0",
+    "toast": "^0.5.4"
   },
   "devDependencies": {
     "@types/react": "^18.2.55",

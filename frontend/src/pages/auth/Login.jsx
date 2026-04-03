@@ -9,15 +9,14 @@ export default function Login() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
   const [showPw, setShowPw] = useState(false);
-const [darkMode, setDarkMode] = useState(false);
-useEffect(() => {
-setDarkMode(!darkMode);
+  const [darkMode, setDarkMode] = useState(false);
+  useEffect(() => {
+    setDarkMode(!darkMode);
 
-  if (!darkMode) {
-    document.documentElement.classList.remove("dark");
-  }
-
-}, [])
+    if (!darkMode) {
+      document.documentElement.classList.remove("dark");
+    }
+  }, []);
   const handle = async (e) => {
     e.preventDefault();
     try {
@@ -37,7 +36,6 @@ setDarkMode(!darkMode);
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        {/* Logo */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-14 h-14 bg-indigo-600 rounded-2xl mb-4 shadow-lg">
             <Clock size={28} className="text-white" />

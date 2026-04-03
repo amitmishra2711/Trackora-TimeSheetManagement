@@ -1,12 +1,10 @@
 ﻿import { Clock, Menu, Moon, Sun, X } from "lucide-react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "../ui";
 
 export function LandingNavbar({ handleStart }) {
     const [isOpen, setIsOpen] = useState(false);
     const [theme, setTheme] = useState("light");
-    const navigate = useNavigate();
 
     const toggleTheme = () => {
         const newTheme = theme === "light" ? "dark" : "light";
@@ -75,13 +73,10 @@ export function LandingNavbar({ handleStart }) {
                     <a href="#contact" onClick={() => setIsOpen(false)} className="block text-sm text-muted-foreground">Contact Us</a>
 
                     <div className="pt-4 border-t border-border space-y-3">
-                        <button onClick={() => { navigate("/login"); setIsOpen(false); }} className="block w-full text-left text-sm text-foreground font-medium">
+                       
+                        <Button onClick={() => { handleStart(); setIsOpen(false); }} className="w-full rounded-xl bg-blue-600 text-white hover:bg-blue-800 transition-all duration-300">
+
                             Login
-                        </button>
-
-                        <Button onClick={() => { handleStart(); setIsOpen(false); }} className="w-full">
-
-                            Get Started 🚀
                         </Button>
 
                         <button onClick={toggleTheme} className="flex items-center gap-2 text-sm pt-2">
