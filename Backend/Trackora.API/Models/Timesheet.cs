@@ -11,7 +11,7 @@ namespace Trackora.API.Models
         public DateTime Date { get; set; }
         [Column(TypeName = "decimal(5,2)")] public decimal HoursWorked { get; set; }
         public string? Description { get; set; }
-        public string Status { get; set; } = "Pending"; // Pending, Approved, Rejected
+        public string Status { get; set; } = "Pending"; 
         public bool IsDeleted { get; set; } = false;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

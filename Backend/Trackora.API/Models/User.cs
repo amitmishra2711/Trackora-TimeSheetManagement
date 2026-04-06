@@ -9,7 +9,7 @@ namespace Trackora.API.Models
         [Required, MaxLength(100)] public string LastName { get; set; } = string.Empty;
         [Required, MaxLength(200)] public string Email { get; set; } = string.Empty;
         [Required] public string PasswordHash { get; set; } = string.Empty;
-        [Required] public string Role { get; set; } = "Employee"; // Admin, Leader, Employee
+        [Required] public string Role { get; set; } = "Employee"; 
         public bool IsActive { get; set; } = true;
         public bool IsDeleted { get; set; } = false;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

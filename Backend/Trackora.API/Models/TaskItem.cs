@@ -11,8 +11,8 @@ namespace Trackora.API.Models
         public int ProjectId { get; set; }
         public int AssignedTo { get; set; }
         public int AssignedBy { get; set; }
-        public string Priority { get; set; } = "Medium"; // Low, Medium, High
-        public string Status { get; set; } = "Todo"; // Todo, InProgress, Completed
+        public string Priority { get; set; } = "Medium"; 
+        public string Status { get; set; } = "Todo"; 
         public DateTime? DueDate { get; set; }
         public bool IsDeleted { get; set; } = false;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
