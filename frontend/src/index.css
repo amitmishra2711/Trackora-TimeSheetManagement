@@ -41,98 +41,230 @@
 }
 
 @layer components {
-
   .btn {
-    @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.75rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    transition-property: all;
+    transition-duration: 150ms;
+  }
+
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 
   .btn-primary {
-      @apply btn;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.75rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    transition-property: all;
+    transition-duration: 150ms;
     background-color: rgb(var(--primary));
     color: white;
   }
+
   .btn-primary:hover {
     background-color: rgb(var(--primary-hover));
   }
+
   .btn-primary:active {
-    @apply scale-95;
+    transform: scale(0.95);
   }
 
   .btn-secondary {
-    @apply btn;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.75rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    transition-property: all;
+    transition-duration: 150ms;
     background-color: rgb(var(--secondary-bg));
     color: rgb(var(--secondary-text));
     border: 1px solid rgb(var(--border));
   }
+
   .btn-secondary:hover {
-    @apply bg-gray-50 dark:bg-gray-700;
+    background-color: rgb(249 250 251);
+  }
+
+  .dark .btn-secondary:hover {
+    background-color: rgb(55 65 81);
+  }
+
+  .btn-secondary:active {
+    transform: scale(0.95);
   }
 
   .btn-danger {
-    @apply btn bg-red-600 text-white hover:bg-red-700 active:scale-95;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.75rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    transition-property: all;
+    transition-duration: 150ms;
+    background-color: rgb(220 38 38);
+    color: white;
+  }
+
+  .btn-danger:hover {
+    background-color: rgb(185 28 28);
+  }
+
+  .btn-danger:active {
+    transform: scale(0.95);
   }
 
   .btn-success {
-    @apply btn bg-green-600 text-white hover:bg-green-700 active:scale-95;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.75rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    transition-property: all;
+    transition-duration: 150ms;
+    background-color: rgb(16 185 129);
+    color: white;
+  }
+
+  .btn-success:hover {
+    background-color: rgb(16 153 119);
+  }
+
+  .btn-success:active {
+    transform: scale(0.95);
   }
 
   .input {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
     background-color: rgb(var(--input-bg));
     color: rgb(var(--text));
     border: 1px solid rgb(var(--border));
-    @apply w-full px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent;
+    box-sizing: border-box;
+  }
+
+  .input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+    border-color: transparent;
   }
 
   .label {
+    display: block;
     color: rgb(var(--text));
-    @apply block text-sm font-medium mb-1;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
   }
 
   .card {
     background-color: rgb(var(--card));
     border: 1px solid rgb(var(--border));
-    @apply rounded-xl shadow-sm;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   }
 
   .badge {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.125rem 0.625rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 500;
   }
 
-  .badge-pending  { @apply badge bg-yellow-100 text-yellow-800; }
-  .badge-approved { @apply badge bg-green-100 text-green-800; }
-  .badge-rejected { @apply badge bg-red-100 text-red-800; }
-  .badge-active   { @apply badge bg-blue-100 text-blue-800; }
-  .badge-completed{ @apply badge bg-gray-100 text-gray-800; }
+  .badge-pending {
+    background-color: rgb(254 243 199);
+    color: rgb(120 53 15);
+  }
+
+  .badge-approved {
+    background-color: rgb(220 252 231);
+    color: rgb(22 101 52);
+  }
+
+  .badge-rejected {
+    background-color: rgb(254 226 226);
+    color: rgb(153 27 27);
+  }
+
+  .badge-active {
+    background-color: rgb(219 234 254);
+    color: rgb(29 78 216);
+  }
+
+  .badge-completed {
+    background-color: rgb(243 244 246);
+    color: rgb(55 65 81);
+  }
 
   .table-wrap {
     border: 1px solid rgb(var(--border));
-    @apply overflow-x-auto rounded-xl;
+    overflow-x: auto;
+    border-radius: 0.75rem;
   }
 
   .table {
-    @apply w-full text-sm text-left;
+    width: 100%;
+    font-size: 0.875rem;
+    text-align: left;
   }
 
   .table thead {
-    @apply text-xs uppercase tracking-wider;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     background-color: rgb(var(--bg));
   }
 
   .table th {
-    @apply px-4 py-3 font-medium;
+    padding: 0.75rem 1rem;
+    font-weight: 500;
   }
 
   .table td {
     color: rgb(var(--text));
-    @apply px-4 py-3;
+    padding: 0.75rem 1rem;
   }
 
   .table tbody tr {
     border-top: 1px solid rgb(var(--border));
-    @apply transition-colors;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
 
   .table tbody tr:hover {
-    @apply bg-gray-50 dark:bg-gray-700;
+    background-color: rgb(249 250 251);
+  }
+
+  .dark .table tbody tr:hover {
+    background-color: rgb(55 65 81);
   }
 }

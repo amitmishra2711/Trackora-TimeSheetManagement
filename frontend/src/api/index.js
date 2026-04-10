@@ -74,11 +74,15 @@ export const tasksApi = {
   updateStatus: (id, status) => api.patch(`/tasks/${id}/status`, { status }),
   delete: (id) => api.delete(`/tasks/${id}`)
 }
+
 export const timesheetsApi = {
   getAll: (params) => api.get('/timesheets', { params }),
   getMine: () => api.get('/timesheets/my'),
   getByTeam: (teamId) => api.get(`/timesheets/team/${teamId}`),
+  getByMyTeams: () => api.get('/timesheets/my-teams'),
   getById: (id) => api.get(`/timesheets/${id}`),
+  getByMemberAndProject: (userId, projectId) =>
+    api.get(`/timesheets/member/${userId}/project/${projectId}`),
   create: (data) => api.post('/timesheets', data),
   update: (id, data) => api.put(`/timesheets/${id}`, data),
   delete: (id) => api.delete(`/timesheets/${id}`),

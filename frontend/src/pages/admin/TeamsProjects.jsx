@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { teamsApi, usersApi, projectsApi } from "../../api";
 import {
   Modal,
@@ -219,6 +220,7 @@ export function TeamsPage() {
         </div>
       </div>
 
+      {/* Create/Edit Modal */}
       <Modal
         open={!!modal}
         onClose={() => setModal(null)}
@@ -234,6 +236,7 @@ export function TeamsPage() {
         />
       </Modal>
 
+      {/* Add Member Modal */}
       <Modal
         open={!!memberModal}
         onClose={() => setMemberModal(null)}
@@ -360,6 +363,7 @@ function TeamForm({ initial, leaders, employees, onSave, onClose, loading }) {
 }
 
 export function ProjectsPage() {
+  const navigate = useNavigate();
   const [data, setData] = useState({ items: [], totalCount: 0, totalPages: 1 });
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
@@ -444,7 +448,7 @@ export function ProjectsPage() {
               setSearch(v);
               setPage(1);
             }}
-            placeholder="Search projects..."
+            placeholder="Search by project name or team name..."
           />
         </div>
         <div className="table-wrap rounded-none">
@@ -475,7 +479,14 @@ export function ProjectsPage() {
               ) : (
                 data.items.map((p) => (
                   <tr key={p.id}>
-                    <td className="font-medium">{p.name}</td>
+                    <td>
+                      <button
+                        onClick={() => navigate(`/admin/projects/${p.id}`)}
+                        className="font-medium text-indigo-600 hover:text-indigo-800 hover:underline text-left"
+                      >
+                        {p.name}
+                      </button>
+                    </td>
                     <td className="text-gray-500 max-w-xs truncate">
                       {p.description || "—"}
                     </td>

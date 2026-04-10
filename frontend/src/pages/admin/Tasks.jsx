@@ -241,7 +241,7 @@ export default function TasksPage() {
               setSearch(v);
               setPage(1);
             }}
-            placeholder="Search tasks..."
+            placeholder="Search by task title or project name..."
           />
         </div>
         <div className="table-wrap rounded-none">

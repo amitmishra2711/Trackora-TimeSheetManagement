@@ -20,10 +20,12 @@ import {
   LeaderDashboard,
   LeaderTeamPage,
   LeaderReportPage,
+  LeaderTasksPage,
 } from "./pages/leader";
 
 import { EmployeeDashboard, EmployeeTasksPage } from "./pages/employee";
 import { LandingPage } from "./components/LandingPage";
+import ProjectDetail from "./pages/admin/Projectdetail";
 
 function ProtectedRoute({ children, roles }) {
   const { user } = useAuth();
@@ -89,6 +91,15 @@ function AppRoutes() {
         }
       />
       <Route
+        path="/admin/projects/:id"
+        element={
+          <ProtectedRoute roles={["Admin"]}>
+            <ProjectDetail />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
         path="/admin/timesheets"
         element={
           <ProtectedRoute roles={["Admin"]}>
@@ -125,7 +136,7 @@ function AppRoutes() {
         path="/leader/tasks"
         element={
           <ProtectedRoute roles={["Leader"]}>
-            <TasksPage />
+            <LeaderTasksPage />
           </ProtectedRoute>
         }
       />

@@ -96,7 +96,6 @@ export function ReportsPage() {
         </div>
       </div>
 
-      {/* Daily Reports */}
       <div className="card">
         <div className="px-5 py-4 border-b border-gray-100">
           <h3 className="font-semibold text-gray-900">

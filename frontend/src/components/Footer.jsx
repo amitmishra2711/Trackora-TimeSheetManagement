@@ -76,20 +76,20 @@ export function Footer() {
           <div className="flex flex-col gap-2 text-sm">
             <a
               href="#hero"
-              className="hover:text-accent transition  hover:text-blue-600"
+              className="transition hover:text-blue-600"
             >
               Home
             </a>
 
             <a
               href="#features"
-              className="hover:text-accent transition hover:text-blue-600"
+              className="transition hover:text-blue-600"
             >
               Features
             </a>
             <a
               href="#about"
-              className="hover:text-accent transition  hover:text-blue-600"
+              className="transition hover:text-blue-600"
             >
               About
             </a>
@@ -97,30 +97,30 @@ export function Footer() {
 
           <div className="flex items-center gap-4">
             <a
-              href="https://www.instagram.com/amitmishra_27"
+              href="https://www.instagram.com/amitmishra__27"
               target="_blank"
-              className="p-2 rounded-lg bg-background border border-border hover:bg-accent/10 hover:border-accent hover:text-accent transition-all duration-300 rounded-xl hover:bg-pink-400  hover:border-pink-400 "
+              className="p-2 rounded-xl bg-background border border-border hover:text-accent transition-all duration-300 hover:bg-pink-400 hover:border-pink-400"
             >
               <Instagram size={18} />
             </a>
             <a
               href="https://www.linkedin.com/in/amit-mishraaa"
               target="_blank"
-              className="p-2 rounded-lg bg-background border border-border hover:bg-accent/10 hover:border-accent hover:text-accent transition-all duration-300  rounded-xl hover:bg-blue-400  hover:border-blue-400"
+              className="p-2 rounded-xl bg-background border border-border hover:text-accent transition-all duration-300 hover:bg-blue-400 hover:border-blue-400"
             >
               <Linkedin size={18} />
             </a>
             <a
               href="https://www.linkedin.com/in/amit-mishraaa"
               target="_blank"
-              className="p-2 rounded-lg bg-background border border-border hover:bg-accent/10 hover:border-accent hover:text-accent transition-all duration-300  rounded-xl hover:bg-blue-400  hover:border-blue-400 "
+              className="p-2 rounded-xl bg-background border border-border hover:text-accent transition-all duration-300 hover:bg-blue-400 hover:border-blue-400"
             >
               <Twitter size={18} />
             </a>
             <a
               href="https://mail.google.com/mail/?view=cm&fs=1&to=amittttt12233221@gmail.com"
               target="_blank"
-              className="p-2 rounded-lg bg-background border border-border hover:bg-accent/10 hover:border-accent hover:text-accent transition-all duration-300 rounded-xl hover:bg-red-500 hover:border-red-500"
+              className="p-2 rounded-xl bg-background border border-border hover:text-accent transition-all duration-300 hover:bg-red-500 hover:border-red-500"
             >
               <Mail size={18} />
             </a>
