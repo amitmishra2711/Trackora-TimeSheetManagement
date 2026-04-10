@@ -12,11 +12,9 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//Database 
 builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-//JWT 
 builder.Services.AddSingleton<JwtHelper>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(opt =>
@@ -36,7 +34,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
-//Services 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITeamService, TeamService>();
@@ -45,7 +42,6 @@ builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<ITimesheetService, TimesheetService>();
 builder.Services.AddScoped<IReportService, ReportService>();
 
-//CORS
 builder.Services.AddCors(opt => opt.AddPolicy("AllowReact", policy =>
     policy.WithOrigins("http://localhost:5173", "http://localhost:3000")
           .AllowAnyHeader().AllowAnyMethod().AllowCredentials()));
@@ -89,13 +85,12 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-//Middle-ware
 app.UseMiddleware<ExceptionMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(); // This defaults to /swagger/index.html
+    app.UseSwaggerUI(); 
 }
 app.UseCors("AllowReact");
 app.UseAuthentication();
