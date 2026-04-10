@@ -127,5 +127,32 @@ namespace Trackora.API.Services
             DueDate = t.DueDate,
             CreatedAt = t.CreatedAt
         };
+
+      public async Task<PagedResult<TaskDto>> GetAllAsync(PaginationQuery query, int? projectId, int? leaderId = null)
+        {
+            var q = Base();
+            if (projectId.HasValue) q = q.Where(t => t.ProjectId == projectId);
+            if (!string.IsNullOrEmpty(query.Search))
+                q = q.Where(t =>
+                    t.Title.Contains(query.Search) ||
+                    t.Project.Name.Contains(query.Search));
+ 
+            // Leader: only show tasks assigned to members of their own team
+            if (leaderId.HasValue)
+            {
+                var teamMemberIds = await _db.Teams
+                    .Where(t => t.LeaderId == leaderId.Value && !t.IsDeleted)
+                    .SelectMany(t => t.TeamMembers.Select(tm => tm.UserId))
+                    .ToListAsync();
+ 
+                q = q.Where(t => teamMemberIds.Contains(t.AssignedTo));
+            }
+ 
+            var total = await q.CountAsync(); 
+            var items = (await q.OrderByDescending(t => t.CreatedAt)
+                .Skip((query.Page - 1) * query.PageSize).Take(query.PageSize).ToListAsync())
+                .Select(Map).ToList();
+            return new PagedResult<TaskDto> { Items = items, TotalCount = total, Page = query.Page, PageSize = query.PageSize };
+        }
     }
 }

@@ -12,6 +12,7 @@ namespace Trackora.API.Services.Interfaces
         Task<TeamDto> AddMemberAsync(int teamId, int userId);
         Task RemoveMemberAsync(int teamId, int userId);
         Task<List<TeamDto>> GetTeamsByLeaderAsync(int leaderId);
+        
         Task<TeamDto?> GetTeamByMemberAsync(int userId);
     }
 }

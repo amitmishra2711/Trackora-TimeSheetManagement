@@ -61,5 +61,7 @@ namespace Trackora.API.Controllers
             await _teams.RemoveMemberAsync(id, userId);
             return NoContent();
         }
+
+    
     }
 }

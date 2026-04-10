@@ -33,28 +33,6 @@ namespace Trackora.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ActivityLogs",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    Action = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Details = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ActivityLogs", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ActivityLogs_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ExportLogs",
                 columns: table => new
                 {
@@ -71,28 +49,6 @@ namespace Trackora.API.Migrations
                     table.ForeignKey(
                         name: "FK_ExportLogs_Users_AdminId",
                         column: x => x.AdminId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Notifications",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsRead = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Notifications", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Notifications_Users_UserId",
-                        column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -208,40 +164,6 @@ namespace Trackora.API.Migrations
                     table.ForeignKey(
                         name: "FK_DailyReports_Users_LeaderId",
                         column: x => x.LeaderId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Messages",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    SenderId = table.Column<int>(type: "int", nullable: false),
-                    ReceiverId = table.Column<int>(type: "int", nullable: true),
-                    TeamId = table.Column<int>(type: "int", nullable: true),
-                    MessageText = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Messages", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Messages_Teams_TeamId",
-                        column: x => x.TeamId,
-                        principalTable: "Teams",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Messages_Users_ReceiverId",
-                        column: x => x.ReceiverId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Messages_Users_SenderId",
-                        column: x => x.SenderId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -369,12 +291,7 @@ namespace Trackora.API.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "CreatedAt", "Email", "FirstName", "IsActive", "IsDeleted", "LastName", "PasswordHash", "Role", "UpdatedAt" },
-                values: new object[] { 1, new DateTime(2026, 3, 31, 9, 43, 12, 314, DateTimeKind.Utc).AddTicks(8415), "admin@trackora.com", "Super", true, false, "Admin", "$2a$11$ll6GjlErGJnsOT7cVkotyOXP2Ssek2ghcHbPqAgHDM28/ZXE8I1Ny", "Admin", new DateTime(2026, 3, 31, 9, 43, 12, 314, DateTimeKind.Utc).AddTicks(8418) });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ActivityLogs_UserId",
-                table: "ActivityLogs",
-                column: "UserId");
+                values: new object[] { 1, new DateTime(2026, 4, 8, 12, 58, 33, 256, DateTimeKind.Utc).AddTicks(4070), "admin@trackora.com", "Super", true, false, "Admin", "$2a$11$p22yAjN76yPEFT/pAJMA9OF4VGAAz1WGG2zskl4myCug.a456vCKa", "Admin", new DateTime(2026, 4, 8, 12, 58, 33, 256, DateTimeKind.Utc).AddTicks(4073) });
 
             migrationBuilder.CreateIndex(
                 name: "IX_DailyReports_LeaderId",
@@ -390,26 +307,6 @@ namespace Trackora.API.Migrations
                 name: "IX_ExportLogs_AdminId",
                 table: "ExportLogs",
                 column: "AdminId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Messages_ReceiverId",
-                table: "Messages",
-                column: "ReceiverId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Messages_SenderId",
-                table: "Messages",
-                column: "SenderId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Messages_TeamId",
-                table: "Messages",
-                column: "TeamId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Notifications_UserId",
-                table: "Notifications",
-                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Projects_CreatedBy",
@@ -494,16 +391,7 @@ namespace Trackora.API.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ActivityLogs");
-
-            migrationBuilder.DropTable(
                 name: "ExportLogs");
-
-            migrationBuilder.DropTable(
-                name: "Messages");
-
-            migrationBuilder.DropTable(
-                name: "Notifications");
 
             migrationBuilder.DropTable(
                 name: "ProjectTeams");

@@ -22,34 +22,6 @@ namespace Trackora.API.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Trackora.API.Models.ActivityLog", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Action")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Details")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("ActivityLogs");
-                });
-
             modelBuilder.Entity("Trackora.API.Models.DailyReport", b =>
                 {
                     b.Property<int>("Id")
@@ -110,69 +82,6 @@ namespace Trackora.API.Migrations
                     b.HasIndex("AdminId");
 
                     b.ToTable("ExportLogs");
-                });
-
-            modelBuilder.Entity("Trackora.API.Models.Message", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("MessageText")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("ReceiverId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SenderId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("TeamId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ReceiverId");
-
-                    b.HasIndex("SenderId");
-
-                    b.HasIndex("TeamId");
-
-                    b.ToTable("Messages");
-                });
-
-            modelBuilder.Entity("Trackora.API.Models.Notification", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsRead")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("Trackora.API.Models.Project", b =>
@@ -471,27 +380,16 @@ namespace Trackora.API.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2026, 3, 31, 9, 43, 12, 314, DateTimeKind.Utc).AddTicks(8415),
+                            CreatedAt = new DateTime(2026, 4, 8, 12, 58, 33, 256, DateTimeKind.Utc).AddTicks(4070),
                             Email = "admin@trackora.com",
                             FirstName = "Super",
                             IsActive = true,
                             IsDeleted = false,
                             LastName = "Admin",
-                            PasswordHash = "$2a$11$ll6GjlErGJnsOT7cVkotyOXP2Ssek2ghcHbPqAgHDM28/ZXE8I1Ny",
+                            PasswordHash = "$2a$11$p22yAjN76yPEFT/pAJMA9OF4VGAAz1WGG2zskl4myCug.a456vCKa",
                             Role = "Admin",
-                            UpdatedAt = new DateTime(2026, 3, 31, 9, 43, 12, 314, DateTimeKind.Utc).AddTicks(8418)
+                            UpdatedAt = new DateTime(2026, 4, 8, 12, 58, 33, 256, DateTimeKind.Utc).AddTicks(4073)
                         });
-                });
-
-            modelBuilder.Entity("Trackora.API.Models.ActivityLog", b =>
-                {
-                    b.HasOne("Trackora.API.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Trackora.API.Models.DailyReport", b =>
@@ -522,41 +420,6 @@ namespace Trackora.API.Migrations
                         .IsRequired();
 
                     b.Navigation("Admin");
-                });
-
-            modelBuilder.Entity("Trackora.API.Models.Message", b =>
-                {
-                    b.HasOne("Trackora.API.Models.User", "Receiver")
-                        .WithMany()
-                        .HasForeignKey("ReceiverId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Trackora.API.Models.User", "Sender")
-                        .WithMany()
-                        .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Trackora.API.Models.Team", "Team")
-                        .WithMany("Messages")
-                        .HasForeignKey("TeamId");
-
-                    b.Navigation("Receiver");
-
-                    b.Navigation("Sender");
-
-                    b.Navigation("Team");
-                });
-
-            modelBuilder.Entity("Trackora.API.Models.Notification", b =>
-                {
-                    b.HasOne("Trackora.API.Models.User", "User")
-                        .WithMany("Notifications")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Trackora.API.Models.Project", b =>
@@ -715,8 +578,6 @@ namespace Trackora.API.Migrations
                 {
                     b.Navigation("DailyReports");
 
-                    b.Navigation("Messages");
-
                     b.Navigation("ProjectTeams");
 
                     b.Navigation("TeamMembers");
@@ -725,8 +586,6 @@ namespace Trackora.API.Migrations
             modelBuilder.Entity("Trackora.API.Models.User", b =>
                 {
                     b.Navigation("LeadingTeams");
-
-                    b.Navigation("Notifications");
 
                     b.Navigation("TeamMemberships");
 

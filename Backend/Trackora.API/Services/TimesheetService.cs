@@ -95,5 +95,26 @@ public class TimesheetService : ITimesheetService
             Status = ts.Status, CreatedAt = ts.CreatedAt,
             CanEdit = ts.Status != "Approved" && (DateTime.UtcNow - ts.CreatedAt).TotalDays <= 7
         };
+
+        public async Task<List<TimesheetDto>> GetByMemberAndProjectAsync(int userId, int projectId) =>
+    (await Base()
+        .Where(ts => ts.UserId == userId && ts.ProjectId == projectId)
+        .OrderByDescending(ts => ts.Date)
+        .ToListAsync())
+    .Select(Map).ToList();
+
+     public async Task<List<TimesheetDto>> GetByLeaderTeamsAsync(int leaderId)
+        {
+            var memberIds = await _db.Teams
+                .Where(t => t.LeaderId == leaderId && !t.IsDeleted)
+                .SelectMany(t => t.TeamMembers.Select(tm => tm.UserId))
+                .Distinct()
+                .ToListAsync();
+            return (await Base()
+                .Where(ts => memberIds.Contains(ts.UserId))
+                .OrderByDescending(ts => ts.Date)
+                .ToListAsync())
+                .Select(Map).ToList();
+        }
     }
 }

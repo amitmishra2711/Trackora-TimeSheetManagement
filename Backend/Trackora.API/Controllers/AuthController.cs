@@ -15,7 +15,7 @@ namespace Trackora.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto) =>
             Ok(await _auth.LoginAsync(dto));
-
+ 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto dto) =>
             Ok(await _auth.RegisterAsync(dto));
