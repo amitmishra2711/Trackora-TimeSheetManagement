@@ -592,7 +592,6 @@ export default function ProjectDetail() {
                       </div>
 
                       <div className="flex items-center gap-4">
-                        {/* Task count */}
                         <div className="hidden sm:flex items-center gap-1.5 text-xs text-gray-500">
                           <CheckSquare size={13} />
                           <span>

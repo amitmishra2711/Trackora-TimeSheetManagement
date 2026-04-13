@@ -137,7 +137,6 @@ namespace Trackora.API.Services
                     t.Title.Contains(query.Search) ||
                     t.Project.Name.Contains(query.Search));
  
-            // Leader: only show tasks assigned to members of their own team
             if (leaderId.HasValue)
             {
                 var teamMemberIds = await _db.Teams
@@ -154,5 +153,10 @@ namespace Trackora.API.Services
                 .Select(Map).ToList();
             return new PagedResult<TaskDto> { Items = items, TotalCount = total, Page = query.Page, PageSize = query.PageSize };
         }
-    }
+        public async Task<bool> IsUserInProjectAsync(int userId, int projectId) =>
+            await _db.ProjectTeams.AnyAsync(pt =>
+                pt.ProjectId == projectId &&
+                pt.Team.TeamMembers.Any(tm => tm.UserId == userId));
+ 
+       }
 }

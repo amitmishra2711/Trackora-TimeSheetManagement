@@ -14,6 +14,7 @@ import {
 import { Plus, Pencil, Trash2, UserPlus, UserMinus } from "lucide-react";
 import toast from "react-hot-toast";
 
+// ─── TEAMS PAGE ───────────────────────────────────────────
 export function TeamsPage() {
   const [data, setData] = useState({ items: [], totalCount: 0, totalPages: 1 });
   const [page, setPage] = useState(1);
@@ -26,6 +27,7 @@ export function TeamsPage() {
   const [employees, setEmployees] = useState([]);
   const [memberModal, setMemberModal] = useState(null);
   const [addUserId, setAddUserId] = useState("");
+  const navigate = useNavigate();
 
   const load = async () => {
     setLoading(true);
@@ -157,7 +159,14 @@ export function TeamsPage() {
               ) : (
                 data.items.map((t) => (
                   <tr key={t.id}>
-                    <td className="font-medium">{t.name}</td>
+                    <td>
+                      <button
+                        onClick={() => navigate(`/admin/teams/${t.id}`)}
+                        className="font-medium text-indigo-600 hover:text-indigo-800 hover:underline text-left"
+                      >
+                        {t.name}
+                      </button>
+                    </td>
                     <td>{t.leaderName}</td>
                     <td>
                       <div className="flex flex-wrap gap-1">
@@ -362,6 +371,7 @@ function TeamForm({ initial, leaders, employees, onSave, onClose, loading }) {
   );
 }
 
+// ─── PROJECTS PAGE ────────────────────────────────────────
 export function ProjectsPage() {
   const navigate = useNavigate();
   const [data, setData] = useState({ items: [], totalCount: 0, totalPages: 1 });

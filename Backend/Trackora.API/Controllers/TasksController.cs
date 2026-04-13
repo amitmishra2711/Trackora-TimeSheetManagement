@@ -33,6 +33,22 @@ namespace Trackora.API.Controllers
         public async Task<IActionResult> Create([FromBody] CreateTaskDto dto) =>
             Ok(await _tasks.CreateAsync(dto, CurrentUserId));
  
+        
+        [HttpPost("self-assign"), Authorize(Roles = "Employee")]
+        public async Task<IActionResult> SelfAssign([FromBody] CreateTaskDto dto)
+        {
+            dto.AssignedTo = CurrentUserId; // always assign to self — cannot assign to others
+            var isInProject = await _tasks.IsUserInProjectAsync(CurrentUserId, dto.ProjectId);
+            if (!isInProject)
+                return Forbid(); // employee not part of this project
+            return Ok(await _tasks.CreateAsync(dto, CurrentUserId));
+        }
+ [HttpGet("user/{userId}"), Authorize(Roles = "Admin,Leader")]
+        public async Task<IActionResult> GetByUser(int userId) =>
+            Ok(await _tasks.GetTasksByUserAsync(userId));
+
+            
+
         [HttpPut("{id}"), Authorize(Roles = "Admin,Leader")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateTaskDto dto) =>
             Ok(await _tasks.UpdateAsync(id, dto));
