@@ -48,6 +48,15 @@ builder.Services.AddCors(opt => opt.AddPolicy("AllowReact", policy =>
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        policy => policy.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
+});
+
+
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -92,6 +101,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(); 
 }
+app.UseCors("AllowAll");
 app.UseCors("AllowReact");
 app.UseAuthentication();
 app.UseAuthorization();
