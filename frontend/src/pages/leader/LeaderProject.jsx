@@ -6,6 +6,7 @@ import {
   EmptyState,
   StatusBadge,
   PageHeader,
+  ExpandableText,
 } from "../../components/common";
 import {
   ArrowLeft,
@@ -118,17 +119,14 @@ export function LeaderProjectsPage() {
   );
 }
 
-// ─────────────────────────────────────────────────────────
-// Page 2 — Members in a specific project (from leader's teams only)
-// Route: /leader/projects/:projectId
-// ─────────────────────────────────────────────────────────
+
 export function LeaderProjectMembersPage() {
   const { projectId } = useParams();
   const navigate = useNavigate();
   const [project, setProject] = useState(null);
   const [myTeams, setMyTeams] = useState([]);
-  const [members, setMembers] = useState([]); // unique members from leader's teams in this project
-  const [taskCounts, setTaskCounts] = useState({}); // { userId: { total, completed, inProgress } }
+  const [members, setMembers] = useState([]);
+  const [taskCounts, setTaskCounts] = useState({}); 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -143,16 +141,13 @@ export function LeaderProjectMembersPage() {
         setProject(proj);
         setMyTeams(leaderTeams);
 
-        // Get members who are both in the project AND in leader's teams
         const leaderTeamIds = new Set(leaderTeams.map((t) => t.id));
         const projectTeamIds = new Set((proj.teams || []).map((t) => t.id));
 
-        // Intersection: teams that belong to BOTH leader and project
         const sharedTeamIds = [...leaderTeamIds].filter((id) =>
           projectTeamIds.has(id),
         );
 
-        // Unique members from those shared teams
         const memberMap = new Map();
         leaderTeams
           .filter((t) => sharedTeamIds.includes(t.id))
@@ -162,7 +157,6 @@ export function LeaderProjectMembersPage() {
         const uniqueMembers = [...memberMap.values()];
         setMembers(uniqueMembers);
 
-        // Load task counts for each member in this project
         if (uniqueMembers.length > 0) {
           const taskRes = await tasksApi.getByProject(projectId);
           const allTasks = taskRes.data || [];
@@ -204,7 +198,6 @@ export function LeaderProjectMembersPage() {
 
   return (
     <div className="space-y-6">
-      {/* Back + header */}
       <div className="flex items-center gap-3">
         <button
           onClick={() => navigate("/leader/projects")}
@@ -225,7 +218,6 @@ export function LeaderProjectMembersPage() {
         </div>
       </div>
 
-      {/* Summary cards */}
       <div className="grid grid-cols-3 gap-4">
         <div className="card p-4 flex items-center gap-3">
           <div className="p-2.5 bg-indigo-50 rounded-xl">
@@ -357,10 +349,7 @@ export function LeaderProjectMembersPage() {
   );
 }
 
-// ─────────────────────────────────────────────────────────
-// Page 3 — Member detail: tasks + timesheets in a project
-// Route: /leader/projects/:projectId/member/:memberId
-// ─────────────────────────────────────────────────────────
+
 export function LeaderMemberDetailPage() {
   const { projectId, memberId } = useParams();
   const navigate = useNavigate();
@@ -469,7 +458,6 @@ export function LeaderMemberDetailPage() {
 
   return (
     <div className="space-y-6">
-      {/* Back + header */}
       <div className="flex items-center gap-3">
         <button
           onClick={() => navigate(`/leader/projects/${projectId}`)}
@@ -492,7 +480,6 @@ export function LeaderMemberDetailPage() {
             <p className="text-xs text-gray-500 mt-0.5">{member.email}</p>
           )}
         </div>
-        {/* Export button */}
         <button
           onClick={handleExport}
           disabled={exporting || timesheets.length === 0}
@@ -503,7 +490,6 @@ export function LeaderMemberDetailPage() {
         </button>
       </div>
 
-      {/* Summary stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="card p-4 text-center">
           <p className="text-2xl font-bold text-indigo-700">{tasks.length}</p>
@@ -556,7 +542,6 @@ export function LeaderMemberDetailPage() {
           </button>
         </div>
 
-        {/* Tasks tab */}
         {activeTab === "tasks" && (
           <div>
             {tasks.length === 0 ? (
@@ -585,11 +570,7 @@ export function LeaderMemberDetailPage() {
                         <p className="text-sm font-medium text-gray-900">
                           {t.title}
                         </p>
-                        {t.description && (
-                          <p className="text-xs text-gray-400 mt-0.5 truncate max-w-sm">
-                            {t.description}
-                          </p>
-                        )}
+                        {t.description  && <ExpandableText text={t.description} limit={10} className="text-sm text-gray-500 mt-1 block" />}
                         <div className="flex items-center gap-3 mt-1.5">
                           <StatusBadge status={t.priority} />
                           {t.dueDate && (
@@ -633,7 +614,6 @@ export function LeaderMemberDetailPage() {
           </div>
         )}
 
-        {/* Timesheets tab */}
         {activeTab === "timesheets" && (
           <div>
             {timesheets.length === 0 ? (
@@ -659,18 +639,13 @@ export function LeaderMemberDetailPage() {
                           day: "numeric",
                         })}
                       </p>
-                      {ts.description && (
-                        <p className="text-xs text-gray-400 mt-0.5 truncate">
-                          {ts.description}
-                        </p>
-                      )}
-                    </div>
+                    {ts.description && <ExpandableText text={ts.description} limit={10} className="text-sm text-gray-500 mt-1 block" />}
+                   </div>
                     <div className="flex items-center gap-3 flex-shrink-0">
                       <span className="text-sm font-semibold text-gray-700">
                         {ts.hoursWorked}h
                       </span>
                       <StatusBadge status={ts.status} />
-                      {/* Approve / Reject buttons for pending */}
                       {ts.status === "Pending" && (
                         <div className="flex gap-1">
                           <button

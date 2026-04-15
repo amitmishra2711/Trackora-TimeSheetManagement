@@ -1,7 +1,6 @@
 ﻿import { useNavigate } from "react-router-dom";
 import { Features } from "./Features";
 import { LandingNavbar } from "./LandingNavbar";
-import AboutImage from "../assets/About_Section.jpg";
 import {
   Clock,
   BarChart3,
@@ -136,7 +135,7 @@ export function LandingPage() {
           <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
             <div className="flex justify-center md:justify-center relative">
               <img
-                src={AboutImage}
+                src="https://i.pinimg.com/1200x/54/c8/77/54c87715239a0ecae5c76df51b22b6d1.jpg"
                 alt="About Trackora"
                 className="h-[550px] w-full max-w-md object-cover rounded-2xl shadow-2xl transform transition-all duration-500 hover:scale-105"
               />

@@ -153,10 +153,11 @@ namespace Trackora.API.Services
                 .Select(Map).ToList();
             return new PagedResult<TaskDto> { Items = items, TotalCount = total, Page = query.Page, PageSize = query.PageSize };
         }
-        public async Task<bool> IsUserInProjectAsync(int userId, int projectId) =>
+ 
+
+  public async Task<bool> IsUserInProjectAsync(int userId, int projectId) =>
             await _db.ProjectTeams.AnyAsync(pt =>
                 pt.ProjectId == projectId &&
                 pt.Team.TeamMembers.Any(tm => tm.UserId == userId));
- 
        }
 }

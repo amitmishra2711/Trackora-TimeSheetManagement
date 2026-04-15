@@ -1,17 +1,29 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { timesheetsApi, projectsApi, tasksApi } from "../../api";
 import {
   Modal,
   ConfirmDialog,
   Pagination,
   PageHeader,
+  ClickableText,
+  ExpandableText,
+  
   Spinner,
   EmptyState,
   StatusBadge,
 } from "../../components/common";
-import { Plus, Pencil, Trash2, CheckCircle, XCircle } from "lucide-react";
+import {
+  Plus,
+  Pencil,
+  Trash2,
+  CheckCircle,
+  XCircle,
+  Filter,
+  X,
+} from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 function TimesheetForm({
   initial,
@@ -61,9 +73,9 @@ function TimesheetForm({
         <select
           className="input"
           value={form.projectId}
-          onChange={(e) => {
-            setForm((f) => ({ ...f, projectId: e.target.value, taskId: "" }));
-          }}
+          onChange={(e) =>
+            setForm((f) => ({ ...f, projectId: e.target.value, taskId: "" }))
+          }
           required
         >
           <option value="">Select project...</option>
@@ -142,7 +154,11 @@ export default function TimesheetsPage({
   employeeView = false,
 }) {
   const { user, isAdmin, isLeader, isEmployee } = useAuth();
-  const [data, setData] = useState({ items: [], totalPages: 1 });
+  const navigate = useNavigate();
+
+  const [items, setItems] = useState([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [page, setPage] = useState(1);
@@ -151,45 +167,184 @@ export default function TimesheetsPage({
   const [projects, setProjects] = useState([]);
   const [tasks, setTasks] = useState([]);
 
-  const load = async () => {
-    setLoading(true);
-    try {
-      let res;
-      if (isEmployee) res = await timesheetsApi.getMine();
-      else if (isLeader) {
-        const teamRes = await import("../../api").then((m) =>
-          m.teamsApi.getLeading(),
-        );
-        const teamId = teamRes.data?.[0]?.id;
-        if (teamId) res = await timesheetsApi.getByTeam(teamId);
-        else res = { data: [] };
-      } else res = await timesheetsApi.getAll({ page, pageSize: 20 });
-      setData(
-        Array.isArray(res.data) ? { items: res.data, totalPages: 1 } : res.data,
-      );
-    } catch {
-      toast.error("Failed to load");
-    } finally {
-      setLoading(false);
+  const [search, setSearch] = useState("");
+  const [filterProject, setFilterProject] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
+  const [filterDateFrom, setFilterDateFrom] = useState("");
+  const [filterDateTo, setFilterDateTo] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
+
+  const [sortBy, setSortBy] = useState("date");
+  const [sortDir, setSortDir] = useState("desc");
+
+  const handleSort = (col) => {
+    if (col === sortBy) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    else {
+      setSortBy(col);
+      setSortDir("desc");
     }
   };
 
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      let res;
+      if (isEmployee) {
+        res = await timesheetsApi.getMine();
+        let data = Array.isArray(res.data) ? res.data : [];
+
+        if (search)
+          data = data.filter(
+            (ts) =>
+              ts.projectName?.toLowerCase().includes(search.toLowerCase()) ||
+              ts.taskTitle?.toLowerCase().includes(search.toLowerCase()) ||
+              ts.description?.toLowerCase().includes(search.toLowerCase()),
+          );
+        if (filterProject)
+          data = data.filter((ts) => ts.projectId === Number(filterProject));
+        if (filterStatus)
+          data = data.filter((ts) => ts.status === filterStatus);
+        if (filterDateFrom)
+          data = data.filter(
+            (ts) => new Date(ts.date) >= new Date(filterDateFrom),
+          );
+        if (filterDateTo)
+          data = data.filter(
+            (ts) => new Date(ts.date) <= new Date(filterDateTo),
+          );
+       
+        data.sort((a, b) => {
+          let av =
+            a[
+              sortBy === "date"
+                ? "date"
+                : sortBy === "project"
+                ? "projectName"
+                : sortBy === "task"
+                ? "taskTitle"
+                : "hoursWorked"
+            ];
+          let bv =
+            b[
+              sortBy === "date"
+                ? "date"
+                : sortBy === "project"
+                ? "projectName"
+                : sortBy === "task"
+                ? "taskTitle"
+                : "hoursWorked"
+            ];
+          if (typeof av === "string" && av.includes("T"))
+            return sortDir === "desc"
+              ? new Date(bv) - new Date(av)
+              : new Date(av) - new Date(bv);
+          return sortDir === "desc"
+            ? String(bv).localeCompare(String(av))
+            : String(av).localeCompare(String(bv));
+        });
+        setItems(data);
+        setTotalCount(data.length);
+        setTotalPages(1);
+      } else if (isLeader) {
+        res = await timesheetsApi.getByMyTeams();
+        let data = Array.isArray(res.data) ? res.data : [];
+        if (search)
+          data = data.filter(
+            (ts) =>
+              ts.userName?.toLowerCase().includes(search.toLowerCase()) ||
+              ts.projectName?.toLowerCase().includes(search.toLowerCase()) ||
+              ts.taskTitle?.toLowerCase().includes(search.toLowerCase()),
+          );
+        if (filterProject)
+          data = data.filter((ts) => ts.projectId === Number(filterProject));
+        if (filterStatus)
+          data = data.filter((ts) => ts.status === filterStatus);
+        if (filterDateFrom)
+          data = data.filter(
+            (ts) => new Date(ts.date) >= new Date(filterDateFrom),
+          );
+        if (filterDateTo)
+          data = data.filter(
+            (ts) => new Date(ts.date) <= new Date(filterDateTo),
+          );
+        data.sort((a, b) => {
+          let av =
+            sortBy === "username"
+              ? a.userName
+              : sortBy === "project"
+              ? a.projectName
+              : sortBy === "task"
+              ? a.taskTitle
+              : a.date;
+          let bv =
+            sortBy === "username"
+              ? b.userName
+              : sortBy === "project"
+              ? b.projectName
+              : sortBy === "task"
+              ? b.taskTitle
+              : b.date;
+          if (typeof av === "string" && av.includes("T"))
+            return sortDir === "desc"
+              ? new Date(bv) - new Date(av)
+              : new Date(av) - new Date(bv);
+          return sortDir === "desc"
+            ? String(bv).localeCompare(String(av))
+            : String(av).localeCompare(String(bv));
+        });
+        setItems(data);
+        setTotalCount(data.length);
+        setTotalPages(1);
+      } else {
+        res = await timesheetsApi.getAll({
+          page,
+          pageSize: 15,
+          search: search || undefined,
+          sortBy: sortBy || undefined,
+          sortDir: sortDir || undefined,
+        });
+        const d = res.data;
+        setItems(d.items || []);
+        setTotalCount(d.totalCount || 0);
+        setTotalPages(d.totalPages || 1);
+      }
+    } catch {
+      toast.error("Failed to load timesheets");
+    } finally {
+      setLoading(false);
+    }
+  }, [
+    page,
+    search,
+    filterProject,
+    filterStatus,
+    filterDateFrom,
+    filterDateTo,
+    sortBy,
+    sortDir,
+    isAdmin,
+    isLeader,
+    isEmployee,
+  ]);
+
   useEffect(() => {
     load();
-  }, [page]);
+  }, [load]);
+
   useEffect(() => {
     const loadMeta = async () => {
-      const { projectsApi: pApi, tasksApi: tApi } = await import("../../api");
-      const proj = isEmployee
-        ? await pApi.getMine()
-        : await pApi.getAll({ page: 1, pageSize: 100 });
-      setProjects(Array.isArray(proj.data) ? proj.data : proj.data.items || []);
-      const tsk = isEmployee
-        ? await tApi.getMine()
-        : await tApi.getAll({ page: 1, pageSize: 200 });
-      setTasks(Array.isArray(tsk.data) ? tsk.data : tsk.data.items || []);
+      try {
+        const pRes = isEmployee
+          ? await projectsApi.getMine()
+          : await projectsApi.getAll({ page: 1, pageSize: 100 });
+        setProjects(
+          Array.isArray(pRes.data) ? pRes.data : pRes.data?.items || [],
+        );
+        const tRes = await tasksApi.getMine();
+        setTasks(Array.isArray(tRes.data) ? tRes.data : tRes.data?.items || []);
+      } catch {}
     };
-    loadMeta().catch(() => {});
+    loadMeta();
   }, []);
 
   const handleSave = async (form) => {
@@ -235,7 +390,52 @@ export default function TimesheetsPage({
     }
   };
 
-  const items = data.items || data;
+  const clearFilters = () => {
+    setSearch("");
+    setFilterProject("");
+    setFilterStatus("");
+    setFilterDateFrom("");
+    setFilterDateTo("");
+    setPage(1);
+  };
+  const activeFilters = [
+    search,
+    filterProject,
+    filterStatus,
+    filterDateFrom,
+    filterDateTo,
+  ].filter(Boolean).length;
+
+  const SortTh = ({ col, label }) => (
+    <th
+      className="px-4 py-3 font-medium cursor-pointer select-none hover:bg-gray-100 transition-colors"
+      onClick={() => handleSort(col)}
+    >
+      <div className="flex items-center gap-1 text-xs uppercase tracking-wider text-gray-500">
+        {label}
+        <span className="flex flex-col ml-0.5">
+          <span
+            className={`text-[8px] leading-none ${
+              sortBy === col && sortDir === "asc"
+                ? "text-indigo-600"
+                : "text-gray-300"
+            }`}
+          >
+            ▲
+          </span>
+          <span
+            className={`text-[8px] leading-none ${
+              sortBy === col && sortDir === "desc"
+                ? "text-indigo-600"
+                : "text-gray-300"
+            }`}
+          >
+            ▼
+          </span>
+        </span>
+      </div>
+    </th>
+  );
 
   return (
     <div>
@@ -247,6 +447,7 @@ export default function TimesheetsPage({
             ? "Team Timesheets"
             : "All Timesheets"
         }
+        subtitle={`${totalCount} entries`}
         action={
           isEmployee && (
             <button onClick={() => setModal({})} className="btn-primary">
@@ -256,19 +457,133 @@ export default function TimesheetsPage({
         }
       />
 
+      <div className="card mb-4">
+        <div className="p-4 flex items-center gap-3 flex-wrap">
+          <div className="relative flex-1 min-w-48">
+            <input
+              className="input pl-3 w-full"
+              placeholder={
+                isEmployee
+                  ? "Search by project, task, description..."
+                  : isLeader
+                  ? "Search by employee, project, task..."
+                  : "Search by employee, project, task, description..."
+              }
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+            />
+          </div>
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className={`btn-secondary flex items-center gap-2 ${
+              showFilters
+                ? "bg-indigo-50 border-indigo-300 text-indigo-700"
+                : ""
+            }`}
+          >
+            <Filter size={14} /> Filters
+            {activeFilters > 0 && (
+              <span className="bg-indigo-600 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center">
+                {activeFilters}
+              </span>
+            )}
+          </button>
+          {activeFilters > 0 && (
+            <button
+              onClick={clearFilters}
+              className="flex items-center gap-1 text-sm text-red-500 hover:text-red-700"
+            >
+              <X size={14} /> Clear
+            </button>
+          )}
+        </div>
+
+        {showFilters && (
+          <div className="px-4 pb-4 border-t border-gray-100 pt-4 grid grid-cols-2 lg:grid-cols-4 gap-3">
+            {!isEmployee && (
+              <div>
+                <label className="label text-xs">Project</label>
+                <select
+                  className="input text-sm"
+                  value={filterProject}
+                  onChange={(e) => {
+                    setFilterProject(e.target.value);
+                    setPage(1);
+                  }}
+                >
+                  <option value="">All Projects</option>
+                  {projects.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+            <div>
+              <label className="label text-xs">Status</label>
+              <select
+                className="input text-sm"
+                value={filterStatus}
+                onChange={(e) => {
+                  setFilterStatus(e.target.value);
+                  setPage(1);
+                }}
+              >
+                <option value="">All Statuses</option>
+                {["Pending", "Approved", "Rejected"].map((s) => (
+                  <option key={s}>{s}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="label text-xs">Date From</label>
+              <input
+                type="date"
+                className="input text-sm"
+                value={filterDateFrom}
+                onChange={(e) => {
+                  setFilterDateFrom(e.target.value);
+                  setPage(1);
+                }}
+              />
+            </div>
+            <div>
+              <label className="label text-xs">Date To</label>
+              <input
+                type="date"
+                className="input text-sm"
+                value={filterDateTo}
+                onChange={(e) => {
+                  setFilterDateTo(e.target.value);
+                  setPage(1);
+                }}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
       <div className="card">
-        <div className="table-wrap rounded-xl">
-          <table className="table">
-            <thead>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm text-left">
+            <thead className="bg-gray-50 text-gray-500 text-xs border-b border-gray-200">
               <tr>
-                {!isEmployee && <th>Employee</th>}
-                <th>Project</th>
-                <th>Task</th>
-                <th>Date</th>
-                <th>Hours</th>
-                <th>Status</th>
-                <th>Description</th>
-                <th>Actions</th>
+                {!isEmployee && <SortTh col="username" label="Employee" />}
+                <SortTh col="project" label="Project" />
+                <SortTh col="task" label="Task" />
+                <SortTh col="date" label="Date" />
+                <SortTh col="hours" label="Hours" />
+                <th className="px-4 py-3 text-xs uppercase tracking-wider text-gray-500 font-medium">
+                  Description
+                </th>
+                <SortTh col="status" label="Status" />
+                <th className="px-4 py-3 text-xs uppercase tracking-wider text-gray-500 font-medium">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -284,28 +599,57 @@ export default function TimesheetsPage({
               ) : items.length === 0 ? (
                 <tr>
                   <td colSpan={isEmployee ? 7 : 8}>
-                    <EmptyState message="No timesheets" />
+                    <EmptyState message="No timesheets found" />
                   </td>
                 </tr>
               ) : (
                 items.map((ts) => (
-                  <tr key={ts.id}>
+                  <tr
+                    key={ts.id}
+                    className="border-t border-gray-100 hover:bg-gray-50 transition-colors"
+                  >
                     {!isEmployee && (
-                      <td className="font-medium">{ts.userName}</td>
+                      <td className="px-4 py-3">
+                        <ClickableText
+                          onClick={
+                            isAdmin ? () => navigate(`/admin/users`) : undefined
+                          }
+                        >
+                          {ts.userName}
+                        </ClickableText>
+                      </td>
                     )}
-                    <td>{ts.projectName}</td>
-                    <td className="max-w-xs truncate">{ts.taskTitle}</td>
-                    <td className="text-gray-500">
+                    <td className="px-4 py-3">
+                      <ClickableText
+                        onClick={
+                          isAdmin
+                            ? () => navigate(`/admin/projects/${ts.projectId}`)
+                            : undefined
+                        }
+                      >
+                        {ts.projectName}
+                      </ClickableText>
+                    </td>
+                    <td className="px-4 py-3 text-gray-700 max-w-[140px] truncate">
+                      {ts.taskTitle}
+                    </td>
+                    <td className="px-4 py-3 text-gray-500 whitespace-nowrap">
                       {new Date(ts.date).toLocaleDateString()}
                     </td>
-                    <td className="font-medium">{ts.hoursWorked}h</td>
-                    <td>
+                    <td className="px-4 py-3 font-medium text-gray-900">
+                      {ts.hoursWorked}h
+                    </td>
+                    <td className="px-4 py-3 text-gray-500 max-w-[200px]">
+                      <ExpandableText
+                        text={ts.description || "—"}
+                        limit={10}
+                        className="text-sm"
+                      />
+                    </td>
+                    <td className="px-4 py-3">
                       <StatusBadge status={ts.status} />
                     </td>
-                    <td className="text-gray-500 max-w-xs truncate">
-                      {ts.description || "—"}
-                    </td>
-                    <td>
+                    <td className="px-4 py-3">
                       <div className="flex gap-1">
                         {isEmployee && ts.canEdit && (
                           <>
@@ -349,13 +693,9 @@ export default function TimesheetsPage({
             </tbody>
           </table>
         </div>
-        {data.totalPages > 1 && (
+        {totalPages > 1 && (
           <div className="p-4">
-            <Pagination
-              page={page}
-              totalPages={data.totalPages}
-              onPage={setPage}
-            />
+            <Pagination page={page} totalPages={totalPages} onPage={setPage} />
           </div>
         )}
       </div>

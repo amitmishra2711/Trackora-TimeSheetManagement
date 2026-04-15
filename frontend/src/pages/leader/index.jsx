@@ -2,19 +2,17 @@ import { useEffect, useState } from 'react'
 import { teamsApi, timesheetsApi, tasksApi, reportsApi, projectsApi, usersApi } from '../../api'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-import { StatCard, Spinner, EmptyState, StatusBadge, Modal, PageHeader } from '../../components/common'
+import { StatCard, Spinner, EmptyState, StatusBadge, Modal, PageHeader, ExpandableText } from '../../components/common'
 import { Users, CheckSquare, Clock, FileText, Plus, UserMinus, ChevronDown, ChevronUp } from 'lucide-react'
 import toast from 'react-hot-toast'
 
-// ─── LEADER DASHBOARD ─────────────────────────────────────
 export function LeaderDashboard() {
   const { user } = useAuth()
   const navigate = useNavigate()
-  const [teams, setTeams] = useState([])        // ALL teams this leader leads
+  const [teams, setTeams] = useState([])        
   const [timesheets, setTimesheets] = useState([])
   const [loading, setLoading] = useState(true)
-  const [expandedTeam, setExpandedTeam] = useState(null) // which team card is expanded
-
+  const [expandedTeam, setExpandedTeam] = useState(null) 
   useEffect(() => {
     const load = async () => {
       try {
@@ -25,14 +23,12 @@ export function LeaderDashboard() {
         const allTeams = teamRes.data || []
         setTeams(allTeams)
         setTimesheets(tsRes.data || [])
-        // Auto-expand first team
         if (allTeams.length > 0) setExpandedTeam(allTeams[0].id)
       } catch {} finally { setLoading(false) }
     }
     load()
   }, [])
 
-  // Aggregate stats across ALL teams
   const totalMembers = [...new Map(
     teams.flatMap(t => t.members || []).map(m => [m.id, m])
   ).values()].length
@@ -50,7 +46,6 @@ export function LeaderDashboard() {
         </p>
       </div>
 
-      {/* Stats across all teams */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
       <button onClick={() => navigate('/leader/team')}><StatCard label="Total Teams" value={teams.length} icon={Users} color="purple"  /></button>
         <button onClick={() => navigate('/leader/team')}><StatCard label="Total Members" value={totalMembers} icon={Users} color="blue" /></button>
@@ -90,8 +85,6 @@ export function LeaderDashboard() {
                     {isExpanded ? <ChevronUp size={16} className="text-gray-400" /> : <ChevronDown size={16} className="text-gray-400" />}
                   </div>
                 </button>
-
-                {/* Expanded: members grid */}
                 {isExpanded && (
                   <div className="p-4">
                     {!team.members?.length
@@ -128,7 +121,6 @@ export function LeaderDashboard() {
           })}
       </div>
 
-      {/* Pending approvals across ALL teams */}
       <div className="card">
         <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
           <h3 className="font-semibold text-gray-900">Pending Approvals (All Teams)</h3>
@@ -157,7 +149,6 @@ export function LeaderDashboard() {
   )
 }
 
-// ─── LEADER TEAM PAGE ─────────────────────────────────────
 export function LeaderTeamPage() {
   const [teams, setTeams] = useState([])
   const [loading, setLoading] = useState(true)
@@ -202,7 +193,6 @@ export function LeaderTeamPage() {
               <span className="badge bg-indigo-50 text-indigo-700">Team #{team.id}</span>
             </div>
 
-            {/* Members */}
             {!team.members?.length
               ? <div className="py-8"><EmptyState message="No members in this team" icon={Users} /></div>
               : (
@@ -234,34 +224,28 @@ export function LeaderTeamPage() {
   )
 }
 
-// ─── LEADER TASKS PAGE ────────────────────────────────────
-// Leader can only assign tasks to members of their OWN teams
-// and only to projects those teams are assigned to
 export function LeaderTasksPage() {
   const { user } = useAuth()
   const [tasks, setTasks] = useState([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [modal, setModal] = useState(null)
-  const [teams, setTeams] = useState([])          // all teams this leader leads
-  const [allMembers, setAllMembers] = useState([]) // unique members across all teams
-  const [projects, setProjects] = useState([])    // projects assigned to leader's teams
+  const [teams, setTeams] = useState([])         
+  const [allMembers, setAllMembers] = useState([]) 
+  const [projects, setProjects] = useState([])  
 
   useEffect(() => {
     const load = async () => {
       setLoading(true)
       try {
-        // 1. Get all teams this leader leads
         const teamRes = await teamsApi.getLeading()
         const myTeams = teamRes.data || []
         setTeams(myTeams)
 
-        // 2. Unique members across all teams
         const memberMap = new Map()
         myTeams.flatMap(t => t.members || []).forEach(m => memberMap.set(m.id, m))
         setAllMembers([...memberMap.values()])
 
-        // 3. Get all projects — filter to those that include at least one of leader's teams
         const projRes = await projectsApi.getAll({ page: 1, pageSize: 100 })
         const myTeamIds = new Set(myTeams.map(t => t.id))
         const myProjects = (projRes.data.items || []).filter(p =>
@@ -269,7 +253,6 @@ export function LeaderTasksPage() {
         )
         setProjects(myProjects)
 
-        // 4. Load tasks scoped to leader (backend already filters by their team members)
         const taskRes = await import('../../api').then(m =>
           m.tasksApi.getAll({ page: 1, pageSize: 100 })
         )
@@ -350,7 +333,6 @@ export function LeaderTasksPage() {
         </div>
       </div>
 
-      {/* Task create/edit modal */}
       <Modal
         open={!!modal}
         onClose={() => setModal(null)}
@@ -371,7 +353,6 @@ export function LeaderTasksPage() {
   )
 }
 
-// Task form for leader — projects scoped to their teams, members scoped to their teams
 function LeaderTaskForm({ initial, projects, members, teams, onSave, onClose, loading }) {
   const PRIORITIES = ['Low', 'Medium', 'High']
   const STATUSES = ['Todo', 'InProgress', 'Completed']
@@ -386,7 +367,6 @@ function LeaderTaskForm({ initial, projects, members, teams, onSave, onClose, lo
     dueDate: initial?.dueDate ? initial.dueDate.split('T')[0] : ''
   })
 
-  // When project changes, filter members to only those in teams assigned to that project
   const [filteredMembers, setFilteredMembers] = useState(members)
 
   useEffect(() => {
@@ -397,9 +377,7 @@ function LeaderTaskForm({ initial, projects, members, teams, onSave, onClose, lo
     const selectedProject = projects.find(p => p.id === Number(form.projectId))
     if (!selectedProject) { setFilteredMembers(members); return }
 
-    // Get team IDs assigned to this project
     const projectTeamIds = new Set((selectedProject.teams || []).map(t => t.id))
-    // Get member IDs from those teams (intersected with leader's teams)
     const validMemberIds = new Set(
       teams
         .filter(t => projectTeamIds.has(t.id))
@@ -479,7 +457,6 @@ function LeaderTaskForm({ initial, projects, members, teams, onSave, onClose, lo
   )
 }
 
-// ─── LEADER DAILY REPORT PAGE ─────────────────────────────
 export function LeaderReportPage() {
   const [reports, setReports] = useState([])
   const [loading, setLoading] = useState(true)
@@ -512,7 +489,6 @@ export function LeaderReportPage() {
     load()
   }, [])
 
-  // When selected team changes, reload reports
   useEffect(() => {
     if (!selectedTeamId) return
     reportsApi.getAll(selectedTeamId)
@@ -557,7 +533,6 @@ export function LeaderReportPage() {
         }
       />
 
-      {/* Team filter tabs when leader has multiple teams */}
       {teams.length > 1 && (
         <div className="flex gap-2 mb-4">
           {teams.map(t => (
@@ -589,7 +564,8 @@ export function LeaderReportPage() {
                       <p className="font-medium text-gray-900">
                         {new Date(r.reportDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                       </p>
-                      <p className="text-sm text-gray-500 mt-1">{r.summary}</p>
+                  {r.summary && <ExpandableText text={r.summary} limit={5} className="text-sm text-gray-500 mt-1 block" />}
+                      
                     </div>
                     <span className="text-xs text-gray-400">{r.details?.length || 0} tasks</span>
                   </div>
@@ -600,7 +576,6 @@ export function LeaderReportPage() {
 
       <Modal open={modal} onClose={() => setModal(false)} title="Submit Daily Report" size="lg">
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Team selector in form when leader leads multiple teams */}
           {teams.length > 1 && (
             <div>
               <label className="label">Select Team</label>
@@ -656,5 +631,4 @@ export function LeaderReportPage() {
   )
 }
 
-// Re-export shared pages
 export { default as LeaderTimesheets } from '../admin/Timesheets'

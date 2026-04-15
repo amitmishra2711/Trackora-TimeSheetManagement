@@ -14,7 +14,6 @@ import {
 import { Plus, Pencil, Trash2, UserPlus, UserMinus } from "lucide-react";
 import toast from "react-hot-toast";
 
-// ─── TEAMS PAGE ───────────────────────────────────────────
 export function TeamsPage() {
   const [data, setData] = useState({ items: [], totalCount: 0, totalPages: 1 });
   const [page, setPage] = useState(1);
@@ -229,7 +228,6 @@ export function TeamsPage() {
         </div>
       </div>
 
-      {/* Create/Edit Modal */}
       <Modal
         open={!!modal}
         onClose={() => setModal(null)}
@@ -245,7 +243,6 @@ export function TeamsPage() {
         />
       </Modal>
 
-      {/* Add Member Modal */}
       <Modal
         open={!!memberModal}
         onClose={() => setMemberModal(null)}
@@ -371,7 +368,6 @@ function TeamForm({ initial, leaders, employees, onSave, onClose, loading }) {
   );
 }
 
-// ─── PROJECTS PAGE ────────────────────────────────────────
 export function ProjectsPage() {
   const navigate = useNavigate();
   const [data, setData] = useState({ items: [], totalCount: 0, totalPages: 1 });

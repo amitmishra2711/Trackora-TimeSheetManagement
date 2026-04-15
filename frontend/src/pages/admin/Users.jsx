@@ -4,9 +4,9 @@ import {
   Modal,
   ConfirmDialog,
   StatusBadge,
-  Pagination,
   PageHeader,
   SearchInput,
+  Pagination,
   Spinner,
   EmptyState,
 } from "../../components/common";

@@ -10,23 +10,36 @@ public class TimesheetService : ITimesheetService
         private readonly AppDbContext _db;
         public TimesheetService(AppDbContext db) { _db = db; }
  
-       private IQueryable<Timesheet> Base()
-{
-    return _db.Timesheets
-        .Include(t => t.User)
-        .Include(t => t.Project)
-        .Include(t => t.Task)
-        .Where(t => !t.IsDeleted);
-}
-        public async Task<PagedResult<TimesheetDto>> GetAllAsync(PaginationQuery query, int? userId, int? projectId)
+        private IQueryable<Timesheet> Base() => _db.Timesheets
+            .Include(ts => ts.User).Include(ts => ts.Project).Include(ts => ts.Task)
+            .Where(ts => !ts.IsDeleted);
+ 
+        public async Task<PagedResult<TimesheetDto>> GetAllAsync(PaginationQuery query, int? userId, int? projectId, string? sortBy = null, string? sortDir = null)
         {
             var q = Base();
             if (userId.HasValue) q = q.Where(ts => ts.UserId == userId);
             if (projectId.HasValue) q = q.Where(ts => ts.ProjectId == projectId);
-            if (!string.IsNullOrEmpty(query.Search)) q = q.Where(ts => ts.Description != null && ts.Description.Contains(query.Search));
+            if (!string.IsNullOrEmpty(query.Search))
+                q = q.Where(ts =>
+                    (ts.User.FirstName + " " + ts.User.LastName).Contains(query.Search) ||
+                    ts.Project.Name.Contains(query.Search) ||
+                    ts.Task.Title.Contains(query.Search) ||
+                    (ts.Description != null && ts.Description.Contains(query.Search)));
+ 
+            // Sorting
+            bool desc = sortDir?.ToLower() != "asc";
+            q = sortBy?.ToLower() switch
+            {
+                "username" => desc ? q.OrderByDescending(ts => ts.User.FirstName) : q.OrderBy(ts => ts.User.FirstName),
+                "project"  => desc ? q.OrderByDescending(ts => ts.Project.Name)   : q.OrderBy(ts => ts.Project.Name),
+                "task"     => desc ? q.OrderByDescending(ts => ts.Task.Title)      : q.OrderBy(ts => ts.Task.Title),
+                "hours"    => desc ? q.OrderByDescending(ts => ts.HoursWorked)     : q.OrderBy(ts => ts.HoursWorked),
+                "status"   => desc ? q.OrderByDescending(ts => ts.Status)          : q.OrderBy(ts => ts.Status),
+                _          => desc ? q.OrderByDescending(ts => ts.Date)            : q.OrderBy(ts => ts.Date),
+            };
+ 
             var total = await q.CountAsync();
-            var items = (await q.OrderByDescending(ts => ts.Date)
-                .Skip((query.Page - 1) * query.PageSize).Take(query.PageSize).ToListAsync())
+            var items = (await q.Skip((query.Page - 1) * query.PageSize).Take(query.PageSize).ToListAsync())
                 .Select(Map).ToList();
             return new PagedResult<TimesheetDto> { Items = items, TotalCount = total, Page = query.Page, PageSize = query.PageSize };
         }
@@ -82,30 +95,8 @@ public class TimesheetService : ITimesheetService
                 .Select(Map).ToList();
         }
  
-        public async Task<List<TimesheetDto>> GetMyTimesheetsAsync(int userId) =>
-            (await Base().Where(ts => ts.UserId == userId).OrderByDescending(ts => ts.Date).ToListAsync())
-            .Select(Map).ToList();
- 
-        private static TimesheetDto Map(Timesheet ts) => new()
-        {
-            Id = ts.Id, UserId = ts.UserId, UserName = $"{ts.User.FirstName} {ts.User.LastName}",
-            ProjectId = ts.ProjectId, ProjectName = ts.Project.Name,
-            TaskId = ts.TaskId, TaskTitle = ts.Task.Title,
-            Date = ts.Date, HoursWorked = ts.HoursWorked, Description = ts.Description,
-            Status = ts.Status, CreatedAt = ts.CreatedAt,
-            CanEdit = ts.Status != "Approved" && (DateTime.UtcNow - ts.CreatedAt).TotalDays <= 7
-        };
-
-        public async Task<List<TimesheetDto>> GetByMemberAndProjectAsync(int userId, int projectId) =>
-    (await Base()
-        .Where(ts => ts.UserId == userId && ts.ProjectId == projectId)
-        .OrderByDescending(ts => ts.Date)
-        .ToListAsync())
-    .Select(Map).ToList();
-
-     
-
-         public async Task<List<TimesheetDto>> GetByLeaderTeamsAsync(int leaderId)
+        /// <summary>Gets timesheets for ALL teams led by this leader.</summary>
+        public async Task<List<TimesheetDto>> GetByLeaderTeamsAsync(int leaderId)
         {
             var memberIds = await _db.Teams
                 .Where(t => t.LeaderId == leaderId && !t.IsDeleted)
@@ -118,5 +109,26 @@ public class TimesheetService : ITimesheetService
                 .ToListAsync())
                 .Select(Map).ToList();
         }
+ 
+        public async Task<List<TimesheetDto>> GetMyTimesheetsAsync(int userId) =>
+            (await Base().Where(ts => ts.UserId == userId).OrderByDescending(ts => ts.Date).ToListAsync())
+            .Select(Map).ToList();
+ 
+        public async Task<List<TimesheetDto>> GetByMemberAndProjectAsync(int userId, int projectId) =>
+            (await Base()
+                .Where(ts => ts.UserId == userId && ts.ProjectId == projectId)
+                .OrderByDescending(ts => ts.Date)
+                .ToListAsync())
+            .Select(Map).ToList();
+ 
+        private static TimesheetDto Map(Timesheet ts) => new()
+        {
+            Id = ts.Id, UserId = ts.UserId, UserName = $"{ts.User.FirstName} {ts.User.LastName}",
+            ProjectId = ts.ProjectId, ProjectName = ts.Project.Name,
+            TaskId = ts.TaskId, TaskTitle = ts.Task.Title,
+            Date = ts.Date, HoursWorked = ts.HoursWorked, Description = ts.Description,
+            Status = ts.Status, CreatedAt = ts.CreatedAt,
+            CanEdit = ts.Status != "Approved" && (DateTime.UtcNow - ts.CreatedAt).TotalDays <= 7
+        };
     }
 }

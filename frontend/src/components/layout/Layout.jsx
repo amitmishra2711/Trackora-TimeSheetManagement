@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import {
   LayoutDashboard, Users, UsersRound, FolderKanban, CheckSquare,
-  Clock, FileText, MessageSquare, Bell, Activity, LogOut,
+  Clock, FileText,  Bell,  LogOut,
   ChevronLeft, ChevronRight, Menu, X
 } from 'lucide-react'
 
@@ -27,6 +27,7 @@ const navConfig = {
   ],
   Employee: [
     { to: '/employee', label: 'Dashboard', icon: LayoutDashboard, end: true },
+    { to: '/employee/projects', label: 'My Projects', icon: FolderKanban },
     { to: '/employee/tasks', label: 'My Tasks', icon: CheckSquare },
     { to: '/employee/timesheets', label: 'Timesheets', icon: Clock },
   ]
@@ -46,7 +47,6 @@ export default function Layout({ children }) {
   const Sidebar = ({ mobile = false }) => (
     <aside className={`flex flex-col h-full bg-white border-r border-gray-200 transition-all duration-300
       ${mobile ? 'w-64' : collapsed ? 'w-16' : 'w-64'}`}>
-      {/* Logo */}
       <div className={`flex items-center gap-3 px-4 py-5 border-b border-gray-100 ${collapsed && !mobile ? 'justify-center' : ''}`}>
         <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
           <Clock size={16} className="text-white" />
@@ -62,7 +62,6 @@ export default function Layout({ children }) {
         )}
       </div>
 
-      {/* Nav */}
       <nav className="flex-1 py-4 px-2 space-y-0.5 overflow-y-auto">
         {nav.map(({ to, label, icon: Icon, end }) => (
           <NavLink key={to} to={to} end={end}
@@ -78,7 +77,6 @@ export default function Layout({ children }) {
         ))}
       </nav>
 
-      {/* User + Logout */}
       <div className={`p-3 border-t border-gray-100 ${collapsed && !mobile ? 'flex justify-center' : ''}`}>
         {(!collapsed || mobile) ? (
           <div className="flex items-center gap-3">
@@ -106,12 +104,10 @@ export default function Layout({ children }) {
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50">
-      {/* Desktop sidebar */}
       <div className="hidden lg:flex flex-col h-full">
         <Sidebar />
       </div>
 
-      {/* Mobile sidebar overlay */}
       {mobileOpen && (
         <div className="lg:hidden fixed inset-0 z-50 flex">
           <div className="absolute inset-0 bg-black/40" onClick={() => setMobileOpen(false)} />
@@ -121,19 +117,18 @@ export default function Layout({ children }) {
         </div>
       )}
 
-      {/* Main */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {/* Topbar */}
-        <header className="bg-white border-b border-gray-200 px-4 lg:px-6 py-3 flex items-center gap-3 flex-shrink-0">
+       
+        <header className="bg-white border-b border-gray-200 flex items-center gap-3 flex-shrink-0">
           <button className="lg:hidden p-2 rounded-lg hover:bg-gray-100" onClick={() => setMobileOpen(true)}>
             <Menu size={20} />
-          </button>    
+          </button>
+          
         </header>
 
-        {/* Content */}
         <main className="flex-1 overflow-y-auto p-4 lg:p-6">
           {children}
-        </main> 
+        </main>
       </div>
     </div>
   )

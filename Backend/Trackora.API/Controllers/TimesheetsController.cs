@@ -25,11 +25,10 @@ namespace Trackora.API.Controllers
         public async Task<IActionResult> GetByMyTeams() =>
             Ok(await _ts.GetByLeaderTeamsAsync(CurrentUserId));
  
-       
+    
         [HttpGet("member/{userId}/project/{projectId}"), Authorize(Roles = "Admin,Leader")]
         public async Task<IActionResult> GetByMemberAndProject(int userId, int projectId) =>
             Ok(await _ts.GetByMemberAndProjectAsync(userId, projectId));
- 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id) => Ok(await _ts.GetByIdAsync(id));
  

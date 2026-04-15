@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { tasksApi, projectsApi, usersApi } from "../../api";
+import { tasksApi, projectsApi, usersApi, teamsApi } from "../../api";
 import {
   Modal,
   ConfirmDialog,
@@ -9,10 +9,12 @@ import {
   Spinner,
   EmptyState,
   StatusBadge,
+ 
 } from "../../components/common";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const PRIORITIES = ["Low", "Medium", "High"];
 const STATUSES = ["Todo", "InProgress", "Completed"];
@@ -36,6 +38,7 @@ function TaskForm({
     dueDate: initial?.dueDate ? initial.dueDate.split("T")[0] : "",
   });
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
+
   return (
     <form
       onSubmit={(e) => {
@@ -151,7 +154,9 @@ function TaskForm({
 }
 
 export default function TasksPage() {
-  const { isAdmin } = useAuth();
+  const { isAdmin, isLeader } = useAuth();
+  const navigate = useNavigate();
+
   const [data, setData] = useState({ items: [], totalCount: 0, totalPages: 1 });
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
@@ -162,6 +167,35 @@ export default function TasksPage() {
   const [projects, setProjects] = useState([]);
   const [employees, setEmployees] = useState([]);
 
+  // Load dropdown data for the task form
+  useEffect(() => {
+    if (isAdmin) {
+      // Admin sees all projects and all employees
+      projectsApi
+        .getAll({ page: 1, pageSize: 100 })
+        .then((r) => setProjects(r.data.items || []))
+        .catch(() => {});
+      usersApi
+        .getEmployees()
+        .then((r) => setEmployees(r.data || []))
+        .catch(() => {});
+    } else if (isLeader) {
+      // Leader form only shows their own team's projects and members
+      teamsApi
+        .getLeading()
+        .then((r) => {
+          const team = r.data?.[0];
+          setEmployees(team?.members || []);
+          projectsApi
+            .getAll({ page: 1, pageSize: 100 })
+            .then((pr) => setProjects(pr.data.items || []))
+            .catch(() => {});
+        })
+        .catch(() => {});
+    }
+  }, [isAdmin, isLeader]);
+
+  // Load tasks — backend automatically filters by leader's team
   const load = async () => {
     setLoading(true);
     try {
@@ -177,16 +211,6 @@ export default function TasksPage() {
   useEffect(() => {
     load();
   }, [page, search]);
-  useEffect(() => {
-    projectsApi
-      .getAll({ page: 1, pageSize: 100 })
-      .then((r) => setProjects(r.data.items || []))
-      .catch(() => {});
-    usersApi
-      .getEmployees()
-      .then((r) => setEmployees(r.data))
-      .catch(() => {});
-  }, []);
 
   const handleSave = async (form) => {
     setSaving(true);
@@ -225,7 +249,11 @@ export default function TasksPage() {
     <div>
       <PageHeader
         title="Tasks"
-        subtitle={`${data.totalCount} tasks`}
+        subtitle={
+          isLeader
+            ? `${data.totalCount} tasks in your team`
+            : `${data.totalCount} tasks`
+        }
         action={
           <button onClick={() => setModal({})} className="btn-primary">
             <Plus size={16} /> New Task
@@ -241,9 +269,14 @@ export default function TasksPage() {
               setSearch(v);
               setPage(1);
             }}
-            placeholder="Search by task title or project name..."
+            placeholder={
+              isLeader
+                ? "Search by task title or project name..."
+                : "Search by task title or project name..."
+            }
           />
         </div>
+
         <div className="table-wrap rounded-none">
           <table className="table">
             <thead>
@@ -267,7 +300,13 @@ export default function TasksPage() {
               ) : data.items.length === 0 ? (
                 <tr>
                   <td colSpan={7}>
-                    <EmptyState message="No tasks" />
+                    <EmptyState
+                      message={
+                        isLeader
+                          ? "No tasks found for your team"
+                          : "No tasks found"
+                      }
+                    />
                   </td>
                 </tr>
               ) : (
@@ -309,6 +348,7 @@ export default function TasksPage() {
             </tbody>
           </table>
         </div>
+
         <div className="p-4">
           <Pagination
             page={page}
@@ -334,6 +374,7 @@ export default function TasksPage() {
           isEdit={!!modal?.id}
         />
       </Modal>
+
       <ConfirmDialog
         open={!!deleteTarget}
         onClose={() => setDeleteTarget(null)}

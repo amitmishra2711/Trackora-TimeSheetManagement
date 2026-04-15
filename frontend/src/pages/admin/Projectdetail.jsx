@@ -6,6 +6,7 @@ import {
   Spinner,
   EmptyState,
   StatusBadge,
+  ExpandableText,
 } from "../../components/common";
 import {
   ArrowLeft,
@@ -215,11 +216,7 @@ function MemberTasksModal({ data, onClose }) {
                       <p className="text-sm font-medium text-gray-900">
                         {t.title}
                       </p>
-                      {t.description && (
-                        <p className="text-xs text-gray-400 mt-1 truncate">
-                          {t.description}
-                        </p>
-                      )}
+                        {t.description && <ExpandableText text={t.description} limit={10} className="text-sm text-gray-500 mt-1 block" />}
                       <div className="flex items-center gap-2 mt-2">
                         <span
                           className={`text-xs px-2 py-0.5 rounded-full font-medium ${
@@ -387,11 +384,8 @@ function MemberTimesheetDrawer({ member, projectId, onClose }) {
                           day: "numeric",
                         })}
                       </p>
-                      {ts.description && (
-                        <p className="text-xs text-gray-400 mt-1 truncate">
-                          {ts.description}
-                        </p>
-                      )}
+                     {ts.description && <ExpandableText text={ts.description} limit={10} className="text-sm text-gray-500 mt-1 block" />}
+
                     </div>
                     <div className="flex items-center gap-3 flex-shrink-0">
                       <span className="text-sm font-semibold text-gray-700">
@@ -492,11 +486,8 @@ export default function ProjectDetail() {
             <h1 className="text-2xl font-bold text-gray-900">{project.name}</h1>
             <StatusBadge status={project.status} />
           </div>
-          {project.description && (
-            <p className="text-sm text-gray-500 mt-0.5">
-              {project.description}
-            </p>
-          )}
+         {project.description && <ExpandableText text={project.description} limit={25} className="text-sm text-gray-500 mt-1 block" />}
+
         </div>
         <button onClick={() => setTaskModal(true)} className="btn-primary">
           <Plus size={16} /> New Task

@@ -1,4 +1,14 @@
-import { X, ChevronLeft, ChevronRight, Loader2, InboxIcon } from "lucide-react";
+import { useState } from "react";
+import {
+  X,
+  ChevronLeft,
+  ChevronRight,
+  Loader2,
+  InboxIcon,
+  ChevronUp,
+  ChevronDown,
+  Search,
+} from "lucide-react";
 
 export function Modal({ open, onClose, title, children, size = "md" }) {
   if (!open) return null;
@@ -94,9 +104,21 @@ export function Pagination({ page, totalPages, onPage }) {
       >
         <ChevronLeft size={16} />
       </button>
-      <span className="text-sm font-medium text-gray-700">
-        Page {page} of {totalPages}
-      </span>
+      {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => i + 1).map(
+        (p) => (
+          <button
+            key={p}
+            onClick={() => onPage(p)}
+            className={`w-8 h-8 rounded-lg text-sm font-medium ${
+              p === page
+                ? "bg-indigo-600 text-white"
+                : "hover:bg-gray-100 text-gray-600"
+            }`}
+          >
+            {p}
+          </button>
+        ),
+      )}
       <button
         onClick={() => onPage(page + 1)}
         disabled={page === totalPages}
@@ -108,7 +130,14 @@ export function Pagination({ page, totalPages, onPage }) {
   );
 }
 
-export function StatCard({ label, value, icon: Icon, color = "indigo", sub }) {
+export function StatCard({
+  label,
+  value,
+  icon: Icon,
+  color = "indigo",
+  sub,
+  onClick,
+}) {
   const colors = {
     indigo: "bg-indigo-50 text-indigo-600",
     green: "bg-green-50 text-green-600",
@@ -118,7 +147,14 @@ export function StatCard({ label, value, icon: Icon, color = "indigo", sub }) {
     purple: "bg-purple-50 text-purple-600",
   };
   return (
-    <div className="card p-5 flex items-start gap-4">
+    <div
+      className={`card p-5 flex items-start gap-4 ${
+        onClick
+          ? "cursor-pointer hover:shadow-md hover:border-indigo-200 transition-all duration-150 active:scale-[0.98]"
+          : ""
+      }`}
+      onClick={onClick}
+    >
       <div className={`p-3 rounded-xl ${colors[color]}`}>
         <Icon size={22} />
       </div>
@@ -126,6 +162,9 @@ export function StatCard({ label, value, icon: Icon, color = "indigo", sub }) {
         <p className="text-sm text-gray-500">{label}</p>
         <p className="text-2xl font-bold text-gray-900 mt-0.5">{value}</p>
         {sub && <p className="text-xs text-gray-400 mt-0.5">{sub}</p>}
+        {onClick && (
+          <p className="text-xs text-indigo-500 mt-1">Click to view →</p>
+        )}
       </div>
     </div>
   );
@@ -167,12 +206,128 @@ export function PageHeader({ title, subtitle, action }) {
 
 export function SearchInput({ value, onChange, placeholder = "Search..." }) {
   return (
-    <input
-      type="text"
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder={placeholder}
-      className="input max-w-xs"
-    />
+    <div className="relative max-w-xs">
+      <Search
+        size={14}
+        className="absolute left-3 top-2.5 text-gray-400 pointer-events-none"
+      />
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="input pl-8"
+      />
+    </div>
   );
+}
+
+export function ExpandableText({ text, limit = 50, className = "" }) {
+  const [expanded, setExpanded] = useState(false);
+  if (!text) return null;
+
+  const words = text.split(" ");
+  const isLong = words.length > limit;
+  const displayed =
+    !isLong || expanded ? text : words.slice(0, limit).join(" ") + "...";
+
+  return (
+    <span className={className}>
+      {displayed}
+      {isLong && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setExpanded(!expanded);
+          }}
+          className="ml-1 text-indigo-600 hover:text-indigo-800 font-medium text-xs whitespace-nowrap"
+        >
+          {expanded ? "Read less" : "Read more"}
+        </button>
+      )}
+    </span>
+  );
+}
+
+export function ClickableText({ children, onClick, className = "" }) {
+  if (!onClick) return <span className={className}>{children}</span>;
+  return (
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick();
+      }}
+      className={`text-indigo-600 hover:text-indigo-800 hover:underline font-medium text-left ${className}`}
+    >
+      {children}
+    </button>
+  );
+}
+
+export function SortHeader({ col, label, sortCol, sortDir, onSort }) {
+  const active = sortCol === col;
+  return (
+    <th
+      className="px-4 py-3 font-medium cursor-pointer select-none hover:bg-gray-100 transition-colors"
+      onClick={() => onSort(col)}
+    >
+      <div className="flex items-center gap-1">
+        {label}
+        <span className="flex flex-col ml-0.5">
+          <ChevronUp
+            size={10}
+            className={
+              active && sortDir === "asc" ? "text-indigo-600" : "text-gray-300"
+            }
+          />
+          <ChevronDown
+            size={10}
+            className={
+              active && sortDir === "desc" ? "text-indigo-600" : "text-gray-300"
+            }
+          />
+        </span>
+      </div>
+    </th>
+  );
+}
+
+export function useSortSearch(
+  items,
+  defaultSort = "createdAt",
+  defaultDir = "desc",
+) {
+  const [search, setSearch] = useState("");
+  const [sortCol, setSortCol] = useState(defaultSort);
+  const [sortDir, setSortDir] = useState(defaultDir);
+
+  const handleSort = (col) => {
+    if (col === sortCol) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    else {
+      setSortCol(col);
+      setSortDir("asc");
+    }
+  };
+
+  const sorted = [...items].sort((a, b) => {
+    let av = a[sortCol],
+      bv = b[sortCol];
+    if (av === undefined || av === null) av = "";
+    if (bv === undefined || bv === null) bv = "";
+
+    if (
+      typeof av === "string" &&
+      (av.includes("T") || av.match(/\d{4}-\d{2}-\d{2}/))
+    ) {
+      av = new Date(av).getTime() || 0;
+      bv = new Date(bv).getTime() || 0;
+      return sortDir === "asc" ? av - bv : bv - av;
+    }
+    if (typeof av === "number") return sortDir === "asc" ? av - bv : bv - av;
+    return sortDir === "asc"
+      ? String(av).localeCompare(String(bv))
+      : String(bv).localeCompare(String(av));
+  });
+
+  return { sorted, search, setSearch, sortCol, sortDir, handleSort };
 }
