@@ -1,6 +1,6 @@
 ﻿import { Clock, Menu, Moon, Sun, X } from "lucide-react";
 import { useState } from "react";
-import { Button } from "../ui";
+import { Button } from "../ui/Button";
 
 export function LandingNavbar({ handleStart }) {
     const [isOpen, setIsOpen] = useState(false);
