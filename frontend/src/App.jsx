@@ -29,7 +29,7 @@ import {
   EmployeeTasksPage,
 } from "./pages/employee";
 import { LandingPage } from "./components/LandingPage";
-import ProjectDetail from "./pages/admin/ProjectDetail";
+import ProjectDetail from "./pages/admin/Projectdetail";
 import TeamDetail from "./pages/admin/TeamDetail";
 import { LeaderMemberDetailPage, LeaderProjectMembersPage, LeaderProjectsPage } from "./pages/leader/LeaderProject";
 
