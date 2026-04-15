@@ -12,7 +12,7 @@ import {
   Globe,
 } from "lucide-react";
 import { Footer } from "./Footer";
-import { Button } from "../ui";
+import { Button } from "./ui/Button";
 
 export function LandingPage() {
   const navigate = useNavigate();
