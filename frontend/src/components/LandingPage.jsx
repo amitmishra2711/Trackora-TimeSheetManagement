@@ -7,9 +7,8 @@ import {
   Globe,
 } from "lucide-react";
 import { Footer } from "./Footer";
-import { Button } from "../ui";
+import { Button } from "../ui/Button";
 
-// PERFORMANCE: Extract static data outside the component to prevent recreation on re-renders
 const STATS_DATA = [
   { label: "Hours", value: "32.5h" },
   { label: "Projects", value: "8" },
@@ -28,16 +27,13 @@ export function LandingPage() {
     <div className="min-h-screen bg-background">
       <LandingNavbar handleStart={handleStart} />
 
-      {/* A11Y: Wrap main content in a <main> tag so screen readers can skip navigation */}
       <main id="main-content" className="pt-16">
         
-        {/* HERO SECTION */}
         <section
           id="hero"
           className="relative pt-24 pb-24 px-6 text-center overflow-hidden"
           aria-labelledby="hero-title"
         >
-          {/* PERFORMANCE: Decorative elements marked aria-hidden */}
           <div className="absolute inset-0 -z-10 flex justify-center" aria-hidden="true">
             <div className="w-[600px] h-[600px] bg-gradient-to-r from-blue-500/20 to-cyan-400/20 blur-[120px] rounded-full" />
           </div>
@@ -74,12 +70,10 @@ export function LandingPage() {
           </div>
         </section>
 
-        {/* FEATURES SECTION */}
         <section id="features" className="pt-8 pb-20 px-6 bg-muted/30">
           <Features />
         </section>
 
-        {/* DASHBOARD PREVIEW / STATS SECTION */}
         <section className="relative px-4 sm:px-6 pb-20 overflow-hidden" aria-label="Quick Statistics">
           <div className="absolute inset-0 -z-10 flex justify-center" aria-hidden="true">
             <div className="w-[500px] h-[500px] bg-blue-500/20 blur-[120px] rounded-full" />

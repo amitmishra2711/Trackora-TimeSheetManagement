@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://trackora-backend.onrender.com/api',
+ baseURL: import.meta.env.VITE_API_URL || 'https://trackora-backend.onrender.com/api',
   headers: { 'Content-Type': 'application/json' }
 })
 
@@ -20,7 +20,7 @@ api.interceptors.response.use(
       localStorage.removeItem('user')
       window.location.href = '/login'
     }
-    return Promise.reject(err.response?.data?.message || 'Something went wrong')
+  return Promise.reject(err.response?.data || err)
   }
 )
  

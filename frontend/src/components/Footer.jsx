@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { Instagram, Linkedin, Twitter, Mail, ArrowRight } from "lucide-react";
 import emailjs from "@emailjs/browser";
 import toast from "react-hot-toast";

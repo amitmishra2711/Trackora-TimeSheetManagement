@@ -8,9 +8,6 @@ import {
   Globe,
 } from "lucide-react";
 
-// PERFORMANCE: Moved the features array outside the component.
-// Since this data never changes, defining it inside the component 
-// forces React to recreate the array on every single re-render.
 const featuresList = [
   {
     icon: Clock,
@@ -55,7 +52,7 @@ export function Features() {
     <section 
       id="features" 
       className="py-5 px-4 m-0 sm:px-6 bg-muted/30"
-      aria-labelledby="features-heading" // A11Y: Links the section to its main heading
+      aria-labelledby="features-heading" 
     >
       <div className="max-w-6xl mx-auto text-center mb-20">
         <h2 
@@ -75,18 +72,16 @@ export function Features() {
         </p>
       </div>
 
-      {/* A11Y: Changed grid container to a semantic unordered list (ul). 
-          Screen readers will now announce "List of 6 items", helping users understand the layout. */}
+     
       <ul className="max-w-6xl mx-auto grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {featuresList.map((feature) => {
           const Icon = feature.icon;
 
           return (
-            <li // A11Y: Changed from div to li to match the ul wrapper
+            <li 
               key={feature.title}
               className="group relative bg-card/80 backdrop-blur-xl p-6 rounded-2xl border border-border overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-2"
             >
-              {/* A11Y: aria-hidden="true" added to purely decorative visual elements */}
               <div 
                 className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-300 bg-gradient-to-br from-blue-500/10 to-cyan-400/10 blur-xl" 
                 aria-hidden="true" 
@@ -94,12 +89,12 @@ export function Features() {
 
               <div 
                 className="relative z-10 w-12 h-12 flex items-center justify-center rounded-xl bg-muted mb-4 group-hover:bg-accent/20 transition"
-                aria-hidden="true" // A11Y: Hide the icon container from screen readers
+                aria-hidden="true" 
               >
                 <Icon className="w-6 h-6 text-foreground group-hover:text-accent transition" />
               </div>
 
-              {/* The actual content read by screen readers */}
+         
               <h3 className="relative z-10 text-lg font-semibold mb-2">
                 {feature.title}
               </h3>
@@ -108,7 +103,6 @@ export function Features() {
                 {feature.description}
               </p>
 
-              {/* A11Y: aria-hidden="true" for decorative hover line */}
               <div 
                 className="absolute bottom-0 left-0 w-0 h-[2px] bg-accent transition-all duration-300 group-hover:w-full" 
                 aria-hidden="true" 
