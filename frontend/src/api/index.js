@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
- baseURL: import.meta.env.VITE_API_URL || 'https://trackora-backend.onrender.com/api',
+ baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5244/api',
   headers: { 'Content-Type': 'application/json' }
 })
 
@@ -69,7 +69,6 @@ export const projectsApi = {
   removeTeam: (projectId, teamId) => api.delete(`/projects/${projectId}/teams/${teamId}`)
 }
  
-// ─── Tasks ────────────────────────────────────────────────
 export const tasksApi = {
   getAll: (params) => api.get('/tasks', { params }),
   getById: (id) => api.get(`/tasks/${id}`),
@@ -83,14 +82,12 @@ export const tasksApi = {
   delete: (id) => api.delete(`/tasks/${id}`)
 }
  
-// ─── Timesheets ───────────────────────────────────────────
 export const timesheetsApi = {
   getAll: (params) => api.get('/timesheets', { params }),
   getMine: () => api.get('/timesheets/my'),
   getByTeam: (teamId) => api.get(`/timesheets/team/${teamId}`),
   getByMyTeams: () => api.get('/timesheets/my-teams'),
   getById: (id) => api.get(`/timesheets/${id}`),
-  // Scoped to a specific member + project — used in ProjectDetail drawer
   getByMemberAndProject: (userId, projectId) =>
     api.get(`/timesheets/member/${userId}/project/${projectId}`),
   create: (data) => api.post('/timesheets', data),
