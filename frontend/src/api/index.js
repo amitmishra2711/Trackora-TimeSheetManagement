@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
- baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5244/api',
+ baseURL:  'http://localhost:5244/api' || import.meta.env.VITE_API_URL,
   headers: { 'Content-Type': 'application/json' }
 })
 
@@ -26,14 +26,12 @@ api.interceptors.response.use(
  
 export default api
  
-// ─── Auth ─────────────────────────────────────────────────
 export const authApi = {
   login: (data) => api.post('/auth/login', data),
   register: (data) => api.post('/auth/register', data),
   me: () => api.get('/auth/me')
 }
  
-// ─── Users ────────────────────────────────────────────────
 export const usersApi = {
   getAll: (params) => api.get('/users', { params }),
   getById: (id) => api.get(`/users/${id}`),
@@ -44,7 +42,6 @@ export const usersApi = {
   delete: (id) => api.delete(`/users/${id}`)
 }
  
-// ─── Teams ────────────────────────────────────────────────
 export const teamsApi = {
   getAll: (params) => api.get('/teams', { params }),
   getById: (id) => api.get(`/teams/${id}`),
@@ -57,7 +54,6 @@ export const teamsApi = {
   removeMember: (teamId, userId) => api.delete(`/teams/${teamId}/members/${userId}`)
 }
  
-// ─── Projects ─────────────────────────────────────────────
 export const projectsApi = {
   getAll: (params) => api.get('/projects', { params }),
   getById: (id) => api.get(`/projects/${id}`),
@@ -96,7 +92,6 @@ export const timesheetsApi = {
   approve: (id, status) => api.patch(`/timesheets/${id}/approve`, { status })
 }
  
-// ─── Reports ──────────────────────────────────────────────
 export const reportsApi = {
   getAll: (teamId) => api.get('/reports', { params: { teamId } }),
   getById: (id) => api.get(`/reports/${id}`),

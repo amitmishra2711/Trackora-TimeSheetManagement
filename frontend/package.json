@@ -11,6 +11,7 @@
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
     "@microsoft/signalr": "^8.0.0",
+    "antd": "^6.3.6",
     "axios": "^1.14.0",
     "clsx": "^2.1.1",
     "date-fns": "^3.3.1",

@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 :root {
   --bg: 249 250 251;
   --text: 17 24 39;

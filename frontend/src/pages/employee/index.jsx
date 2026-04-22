@@ -43,7 +43,6 @@ export function EmployeeDashboard() {
         <p className="text-sm text-gray-500">Welcome back, {user?.firstName}!</p>
       </div>
 
-      {/* Clickable stat cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard label="My Tasks" value={tasks.length} icon={CheckSquare} color="indigo"
           onClick={() => navigate('/employee/tasks')} />
@@ -608,7 +607,6 @@ export function EmployeeTasksPage() {
           </div>
         )}
 
-      {/* Self-Assign Modal */}
       <Modal open={modal} onClose={() => setModal(false)} title="Self-Assign a Task" size="lg">
         <form onSubmit={handleSelfAssign} className="space-y-4">
           <div className="p-3 bg-indigo-50 rounded-xl text-sm text-indigo-700 font-medium">

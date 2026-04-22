@@ -283,7 +283,9 @@ function MemberTimesheetDrawer({ member, projectId, onClose }) {
       const url = URL.createObjectURL(new Blob([res.data]));
       const a = document.createElement("a");
       a.href = url;
-      a.download = `${member.firstName}_${member.lastName}_timesheets.xlsx`;
+      const project= await projectsApi.getById(projectId).then(r=>r.data);
+      console.log(project);
+      a.download = `${member.firstName}_${member.lastName}_${project.name}_timesheets.xlsx`;
       a.click();
       URL.revokeObjectURL(url);
       toast.success("Exported!");
