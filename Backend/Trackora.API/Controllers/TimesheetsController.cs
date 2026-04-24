@@ -29,6 +29,7 @@ namespace Trackora.API.Controllers
         [HttpGet("member/{userId}/project/{projectId}"), Authorize(Roles = "Admin,Leader")]
         public async Task<IActionResult> GetByMemberAndProject(int userId, int projectId) =>
             Ok(await _ts.GetByMemberAndProjectAsync(userId, projectId));
+            
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id) => Ok(await _ts.GetByIdAsync(id));
  
@@ -49,5 +50,6 @@ namespace Trackora.API.Controllers
         [HttpPatch("{id}/approve"), Authorize(Roles = "Leader,Admin")]
         public async Task<IActionResult> Approve(int id, [FromBody] ApproveTimesheetDto dto) =>
             Ok(await _ts.ApproveAsync(id, dto.Status, CurrentUserId));
-    }
+
+}
 }

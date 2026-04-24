@@ -32,6 +32,7 @@ import { LandingPage } from "./components/LandingPage";
 import ProjectDetail from "./pages/admin/Projectdetail";
 import TeamDetail from "./pages/admin/TeamDetail";
 import { LeaderMemberDetailPage, LeaderProjectMembersPage, LeaderProjectsPage } from "./pages/leader/LeaderProject";
+import { AdminTimesheetPage, LeaderTimesheetPage } from "./pages/admin/TimesheetAnalystics";
 
 function ProtectedRoute({ children, roles }) {
   const { user } = useAuth();
@@ -123,6 +124,14 @@ function AppRoutes() {
         }
       />
       <Route
+        path="/admin/timesheet-analytics"
+        element={
+          <ProtectedRoute roles={["Admin"]}>
+            <AdminTimesheetPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/admin/reports"
         element={
           <ProtectedRoute roles={["Admin"]}>
@@ -184,6 +193,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute roles={["Leader"]}>
             <TimesheetsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/leader/timesheet-analytics"
+        element={
+          <ProtectedRoute roles={["Leader"]}>
+            <LeaderTimesheetPage />
           </ProtectedRoute>
         }
       />

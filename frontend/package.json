@@ -20,6 +20,7 @@
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.6.0",
     "react-router-dom": "^6.22.0",
+    "react-select": "^5.10.2",
     "react-toastify": "^11.0.5",
     "recharts": "^2.12.2",
     "tailwind-merge": "^3.5.0",

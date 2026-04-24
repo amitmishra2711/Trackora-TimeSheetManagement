@@ -99,4 +99,11 @@ export const reportsApi = {
   exportExcel: (params) => api.get('/reports/export/excel', { params, responseType: 'blob' }),
   exportPdf: (params) => api.get('/reports/export/pdf', { params, responseType: 'blob' })
 }
+
+export const timesheetAnalyticsApi = {
+  getAnalytics: (params) => api.get('/timesheet-analytics', { params }),
+ 
+  exportExcel: (params) =>
+    api.get('/timesheet-analytics/export', { params, responseType: 'blob' }),
+}
  

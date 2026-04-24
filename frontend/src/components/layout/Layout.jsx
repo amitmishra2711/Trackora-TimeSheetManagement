@@ -15,6 +15,8 @@ const navConfig = {
     { to: '/admin/projects', label: 'Projects', icon: FolderKanban },
     { to: '/admin/tasks', label: 'Tasks', icon: CheckSquare },
     { to: '/admin/timesheets', label: 'Timesheets', icon: Clock },
+    { to: '/admin/timesheet-analytics', label: 'Timesheet Analytics', icon: Clock },
+
     { to: '/admin/reports', label: 'Reports', icon: FileText },
   ],
   Leader: [
@@ -23,6 +25,7 @@ const navConfig = {
     { to: '/leader/projects', label: 'Projects', icon: FolderKanban },
     { to: '/leader/tasks', label: 'Tasks', icon: CheckSquare },
     { to: '/leader/timesheets', label: 'Timesheets', icon: Clock },
+    { to: '/leader/timesheet-analytics', label: 'Timesheet Analytics', icon: Clock },
     { to: '/leader/reports', label: 'Daily Reports', icon: FileText },
   ],
   Employee: [

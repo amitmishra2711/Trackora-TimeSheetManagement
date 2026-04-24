@@ -41,6 +41,7 @@ builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<ITimesheetService, TimesheetService>();
 builder.Services.AddScoped<IReportService, ReportService>();
+builder.Services.AddScoped<ITimesheetAnalyticsService, TimesheetAnalyticsService>();
 
 builder.Services.AddCors(opt => opt.AddPolicy("AllowReact", policy =>
     policy.WithOrigins("http://localhost:5173", "http://localhost:3000")
