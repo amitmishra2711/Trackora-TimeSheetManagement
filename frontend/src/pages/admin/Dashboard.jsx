@@ -15,8 +15,7 @@ import { format, subDays } from 'date-fns'
 
 const COLORS = { indigo: '#4f46e5', green: '#16a34a', yellow: '#d97706', red: '#dc2626', blue: '#2563eb', gray: '#6b7280' }
 
-// ─── KPI Card ─────────────────────────────────────────────
-function KpiCard({ label, value, sub, icon: Icon, color = 'indigo', trend, onClick }) {
+  function KpiCard({ label, value, sub, icon: Icon, color = 'indigo', trend, onClick }) {
   const bg = { indigo: 'bg-indigo-50 text-indigo-600', green: 'bg-green-50 text-green-600', yellow: 'bg-yellow-50 text-yellow-600', red: 'bg-red-50 text-red-600', blue: 'bg-blue-50 text-blue-600', purple: 'bg-purple-50 text-purple-600' }
   return (
     <div
@@ -42,7 +41,6 @@ function KpiCard({ label, value, sub, icon: Icon, color = 'indigo', trend, onCli
   )
 }
 
-// ─── Section Header ───────────────────────────────────────
 function SectionHeader({ title, sub }) {
   return (
     <div className="mb-4">
@@ -83,7 +81,6 @@ export default function AdminDashboard() {
         const tasks = tasksRes.data.items || []
         const timesheets = tsRes.data.items || []
 
-        // KPI counts
         setStats({
           users: usersRes.data.totalCount,
           teams: teamsRes.data.totalCount,
@@ -91,42 +88,35 @@ export default function AdminDashboard() {
           tasks: tasks.length
         })
 
-        // Pending approvals & overdue tasks
         setPendingApprovals(timesheets.filter(ts => ts.status === 'Pending').length)
         const today = new Date()
         setOverdueTaskCount(tasks.filter(t => t.dueDate && new Date(t.dueDate) < today && t.status !== 'Completed').length)
 
-        // Task completion rate
         const completedTasks = tasks.filter(t => t.status === 'Completed').length
         setCompletionRate(tasks.length > 0 ? Math.round((completedTasks / tasks.length) * 100) : 0)
 
-        // Hours this week
         const weekAgo = subDays(new Date(), 7)
         const weekTs = timesheets.filter(ts => new Date(ts.date) >= weekAgo)
         setTotalHoursThisWeek(weekTs.reduce((s, ts) => s + Number(ts.hoursWorked), 0))
 
-        // Task status chart
         setTaskStatusData([
           { name: 'Todo', value: tasks.filter(t => t.status === 'Todo').length, fill: COLORS.gray },
           { name: 'In Progress', value: tasks.filter(t => t.status === 'InProgress').length, fill: COLORS.blue },
           { name: 'Completed', value: tasks.filter(t => t.status === 'Completed').length, fill: COLORS.green },
         ])
 
-        // Timesheet status chart
         setTsStatusData([
           { name: 'Pending', value: timesheets.filter(ts => ts.status === 'Pending').length, fill: COLORS.yellow },
           { name: 'Approved', value: timesheets.filter(ts => ts.status === 'Approved').length, fill: COLORS.green },
           { name: 'Rejected', value: timesheets.filter(ts => ts.status === 'Rejected').length, fill: COLORS.red },
         ])
 
-        // Project status chart
         setProjectStatusData([
           { name: 'Active', value: projects.filter(p => p.status === 'Active').length, fill: COLORS.indigo },
           { name: 'Completed', value: projects.filter(p => p.status === 'Completed').length, fill: COLORS.green },
           { name: 'On Hold', value: projects.filter(p => p.status === 'OnHold').length, fill: COLORS.yellow },
         ])
 
-        // Hours per project (top 6)
         const byProject = {}
         timesheets.forEach(ts => { byProject[ts.projectName] = (byProject[ts.projectName] || 0) + Number(ts.hoursWorked) })
         setHoursPerProject(
@@ -136,8 +126,7 @@ export default function AdminDashboard() {
             .map(([name, hours]) => ({ name: name.length > 14 ? name.slice(0, 14) + '…' : name, hours: +hours.toFixed(1) }))
         )
 
-        // Hours per day last 14 days
-        const days = {}
+            const days = {}
         for (let i = 13; i >= 0; i--) {
           const d = format(subDays(new Date(), i), 'MMM dd')
           days[d] = 0
@@ -148,7 +137,6 @@ export default function AdminDashboard() {
         })
         setHoursPerDay(Object.entries(days).map(([date, hours]) => ({ date, hours: +hours.toFixed(1) })))
 
-        // Top 5 employees by hours
         const byUser = {}
         timesheets.forEach(ts => {
           if (!byUser[ts.userName]) byUser[ts.userName] = { name: ts.userName, hours: 0, approved: 0 }
@@ -161,7 +149,6 @@ export default function AdminDashboard() {
             .slice(0, 5)
         )
 
-        // Recent timesheets (latest 6)
         setRecentTimesheets(
           [...timesheets]
             .sort((a, b) => new Date(b.date) - new Date(a.date))
@@ -184,7 +171,6 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-8 pb-8">
 
-      {/* Page title */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
@@ -198,7 +184,6 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Alert bar — show only if there are issues */}
       {(overdueTaskCount > 0 || pendingApprovals > 0) && (
         <div className="bg-amber-50 border border-amber-200 rounded-xl px-5 py-3 flex items-center gap-3">
           <AlertTriangle size={18} className="text-amber-600 flex-shrink-0" />
@@ -217,7 +202,6 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* Primary KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiCard label="Total Employees" value={stats.users} icon={Users} color="indigo"
           sub="All registered users" onClick={() => navigate('/admin/users')} />
@@ -229,7 +213,6 @@ export default function AdminDashboard() {
           sub={`${completionRate}% completion rate`} onClick={() => navigate('/admin/tasks')} />
       </div>
 
-      {/* Secondary KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiCard label="Hours This Week" value={`${totalHoursThisWeek.toFixed(1)}h`} icon={Clock} color="indigo"
           sub="Last 7 days" onClick={() => navigate('/admin/timesheets')} />
@@ -241,9 +224,7 @@ export default function AdminDashboard() {
           sub="Tasks completed vs total" />
       </div>
 
-      {/* Charts row 1 */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Hours trend area chart */}
         <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
           <SectionHeader title="Daily Hours Logged" sub="Last 14 days across all employees" />
           <ResponsiveContainer width="100%" height={220}>
@@ -263,7 +244,6 @@ export default function AdminDashboard() {
           </ResponsiveContainer>
         </div>
 
-        {/* Timesheet status donut */}
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
           <SectionHeader title="Timesheet Status" sub="All submissions" />
           <ResponsiveContainer width="100%" height={180}>
@@ -288,9 +268,7 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Charts row 2 */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Hours by project bar chart */}
         <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
           <SectionHeader title="Hours by Project" sub="Total logged hours per project" />
           {hoursPerProject.length === 0
@@ -308,7 +286,6 @@ export default function AdminDashboard() {
             )}
         </div>
 
-        {/* Task status donut */}
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
           <SectionHeader title="Task Status" sub="All tasks breakdown" />
           <ResponsiveContainer width="100%" height={180}>
@@ -333,10 +310,8 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Bottom row: top employees + recent timesheets */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
 
-        {/* Top employees leaderboard */}
         <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
           <SectionHeader title="Top Employees by Hours" sub="All-time total logged hours" />
           {topEmployees.length === 0
@@ -367,7 +342,6 @@ export default function AdminDashboard() {
             )}
         </div>
 
-        {/* Recent timesheets */}
         <div className="lg:col-span-3 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
             <div>
@@ -411,7 +385,6 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Project status overview */}
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
         <div className="flex items-center justify-between mb-5">
           <SectionHeader title="Project Portfolio Status" sub="Status distribution across all projects" />

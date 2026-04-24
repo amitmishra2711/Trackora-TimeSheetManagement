@@ -307,7 +307,6 @@
           const d = res.data;
          let data = d.items || [];
 
-// 🔥 SAME FILTER LIKE EMPLOYEE
 if (search)
   data = data.filter(
     (ts) =>
@@ -599,23 +598,38 @@ setTotalPages(1);
           )}
         </div>
 
-        <div className="card">
+        <div className="card rounded-none border-none">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-gray-50 text-gray-500 text-xs border-b border-gray-200">
-                <tr>
-                  {!isEmployee && <SortTh col="username" label="Employee" />}
-                  <SortTh col="project" label="Project" />
-                  <SortTh col="task" label="Task" />
-                  <SortTh col="date" label="Date" />
-                  <SortTh col="hours" label="Hours" />
-                  <th className="px-4 py-3 text-xs uppercase tracking-wider text-gray-500 font-medium">
+            <table className="w-full text-sm text-left ">
+              <thead className="bg-gray-50 text-gray-300 text-xs border-b">
+                <tr className="text-gray-300 bg-black">
+                  {!isEmployee && <th className="px-4 py-3 text-xs uppercase tracking-wider text-gray-100 font-bolder">
+                    Employee
+                  </th>}
+                  <th className="px-4 py-3 text-xs  uppercase tracking-wider text-gray-100 font-bolder">
+                    Project
+                  </th>
+                 <th className="px-4 py-3 text-xs uppercase tracking-wider text-gray-100 font-bolder">
+                    TASK
+                  </th>
+                  <th className="px-4 py-3 text-xs uppercase tracking-wider text-gray-100 font-bolder">
+                    DATE
+                  </th>
+                  
+                 
+                  <th className="px-4 py-3 text-xs uppercase tracking-wider text-gray-100 font-bolder">
+                    HOURS
+                  </th>
+                  <th className="px-4 py-3 text-xs uppercase tracking-wider text-gray-100 font-bolder">
                     Description
                   </th>
-                  <SortTh col="status" label="Status" />
-                  <th className="px-4 py-3 text-xs uppercase tracking-wider text-gray-500 font-medium">
-                    Actions
+                  <th className="px-4 py-3 text-xs uppercase tracking-wider text-gray-100 font-bolder">
+                    STATUS
                   </th>
+                    <th className="px-4 py-3 text-xs uppercase tracking-wider text-gray-100 font-bolder">
+                    ACTION
+                  </th>
+                  
                 </tr>
               </thead>
               <tbody>

@@ -8,7 +8,7 @@ namespace Trackora.API.Models
         public int Id { get; set; }
         [Required, MaxLength(200)] public string Name { get; set; } = string.Empty;
         public string? Description { get; set; }
-        public string Status { get; set; } = "Active"; // Active, Completed, OnHold
+        public string Status { get; set; } = "Active";
         public int CreatedBy { get; set; }
         public bool IsDeleted { get; set; } = false;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

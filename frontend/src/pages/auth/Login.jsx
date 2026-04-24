@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { Clock, Eye, EyeOff } from "lucide-react";
 import toast from "react-hot-toast";
@@ -9,30 +9,30 @@ export default function Login() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
   const [showPw, setShowPw] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
+
   useEffect(() => {
-    setDarkMode(!darkMode);
-
-    if (!darkMode) {
-      document.documentElement.classList.remove("dark");
-    }
+    document.documentElement.classList.remove("dark");
   }, []);
-  const handle = async (e) => {
-    e.preventDefault();
-    try {
-      const user = await login(form.email, form.password);
-      toast.success(`Welcome back, ${user.firstName}!`);
-      const routes = {
-        Admin: "/admin",
-        Leader: "/leader",
-        Employee: "/employee",
-      };
-      navigate(routes[user.role] || "/employee");
-    } catch (err) {
-      toast.error(typeof err === "string" ? err : "Login failed");
-    }
-  };
 
+  const handle = async (e) => {
+  e.preventDefault();
+  try {
+  
+    const user = await login(form.email, form.password);
+    toast.success(`Welcome back, ${user.firstName}!`);
+
+    const routes = {
+      Admin: "/admin",
+      Leader: "/leader",
+      Employee: "/employee",
+    };
+
+    navigate(routes[user.role] || "/employee");
+
+  } catch (err) {    
+toast.error("Invalid email or password");
+      }
+};
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
@@ -44,7 +44,7 @@ export default function Login() {
           <p className="text-gray-500 mt-1">Timesheet Management System</p>
         </div>
 
-        <div className="card p-8 shadow-lg">
+        <div className="card p-8 shadow-lg bg-white rounded-xl">
           <h2 className="text-xl font-semibold text-gray-900 mb-6">
             Sign in to your account
           </h2>
@@ -53,7 +53,7 @@ export default function Login() {
               <label className="label">Email address</label>
               <input
                 type="email"
-                className="input"
+                className="input w-full"
                 placeholder="you@company.com"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
@@ -65,7 +65,7 @@ export default function Login() {
               <div className="relative">
                 <input
                   type={showPw ? "text" : "password"}
-                  className="input pr-10"
+                  className="input w-full pr-10"
                   placeholder="••••••••"
                   value={form.password}
                   onChange={(e) =>
@@ -85,7 +85,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="btn-primary w-full justify-center py-2.5 mt-2  rounded-lg  border-2 border-indigo-600 hover:bg-indigo-600"
+              className="btn-primary w-full justify-center py-2.5 mt-2 rounded-lg border-2 border-indigo-600 hover:bg-indigo-600 disabled:opacity-50"
             >
               {loading ? "Signing in..." : "Sign in"}
             </button>

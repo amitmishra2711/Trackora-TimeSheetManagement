@@ -153,7 +153,7 @@ export default function UsersPage() {
       setModal(null);
       load();
     } catch (err) {
-      toast.error(typeof err === "string" ? err : "Failed to save");
+      toast.error(typeof err === "string" ? err : "Email already exists");
     } finally {
       setSaving(false);
     }

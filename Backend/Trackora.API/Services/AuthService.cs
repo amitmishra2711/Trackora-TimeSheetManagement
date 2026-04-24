@@ -22,10 +22,10 @@ namespace Trackora.API.Services
         {
             var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == dto.Email && !u.IsDeleted);
             if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
-                throw new UnauthorizedAccessException("Invalid email or password.");
+               return null;
 
             if (!user.IsActive)
-                throw new UnauthorizedAccessException("Account is deactivated.");
+                return null;
 
             return new AuthResponseDto
             {
