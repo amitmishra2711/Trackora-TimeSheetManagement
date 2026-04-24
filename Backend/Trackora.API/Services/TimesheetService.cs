@@ -70,6 +70,7 @@ namespace Trackora.API.Services
             if (ts.Status == "Approved") throw new InvalidOperationException("Cannot edit approved timesheet.");
             if ((DateTime.UtcNow - ts.CreatedAt).TotalDays > 7) throw new InvalidOperationException("Cannot edit timesheet older than 7 days.");
             ts.HoursWorked = dto.HoursWorked; ts.Description = dto.Description;
+            ts.TaskId = dto.TaskId; ts.ProjectId = dto.ProjectId;
             await _db.SaveChangesAsync();
             return await GetByIdAsync(id);
         }

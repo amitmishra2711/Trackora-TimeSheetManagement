@@ -102,7 +102,6 @@ export function TimesheetFilters({
   const clear = () =>
     onChange({ employeeId: '', projectId: '', teamId: '', startDate: '', endDate: '' })
 
-  // Quick date presets
   const preset = (key) => {
     const now = new Date()
     const presets = {
@@ -130,7 +129,6 @@ export function TimesheetFilters({
 
   return (
     <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-      {/* Header */}
       <button
         className="w-full flex items-center justify-between px-5 py-4 hover:bg-gray-50 transition-colors"
         onClick={() => setOpen(!open)}
@@ -159,7 +157,6 @@ export function TimesheetFilters({
 
       {open && (
         <div className="px-5 pb-5 border-t border-gray-100">
-          {/* Quick presets */}
           <div className="flex flex-wrap gap-2 pt-4 mb-4">
             <span className="text-xs text-gray-400 font-medium self-center">Quick:</span>
             {[
@@ -193,7 +190,6 @@ export function TimesheetFilters({
               </div>
             )}
 
-            {/* Project */}
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1.5">
                 <FolderKanban size={11} className="inline mr-1" />Project
@@ -710,7 +706,6 @@ export function LeaderTimesheetPage() {
   const [data, setData]       = useState(null)
   const [loading, setLoading] = useState(false)
 
-  // Only show leader's teams' employees, projects, teams
   const [employees, setEmployees] = useState([])
   const [projects,  setProjects]  = useState([])
   const [teams,     setTeams]     = useState([])
@@ -722,12 +717,10 @@ export function LeaderTimesheetPage() {
         const myTeams = teamRes.data || []
         setTeams(myTeams)
 
-        // Unique members across all leader's teams
         const memberMap = new Map()
         myTeams.flatMap(t => t.members || []).forEach(m => memberMap.set(m.id, m))
         setEmployees([...memberMap.values()])
 
-        // Projects assigned to leader's teams
         const projRes = await projectsApi.getAll({ page: 1, pageSize: 100 })
         const myTeamIds = new Set(myTeams.map(t => t.id))
         setProjects(

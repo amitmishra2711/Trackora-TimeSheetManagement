@@ -10,10 +10,7 @@ import {
   Search,
 } from "lucide-react";
 
-/**
- * MODAL COMPONENT
- * Added: Escape key listener, role="dialog", aria-modal, and focus trap hints.
- */
+
 export function Modal({ open, onClose, title, children, size = "md" }) {
   useEffect(() => {
     const handleEsc = (e) => {
@@ -66,10 +63,7 @@ export function Modal({ open, onClose, title, children, size = "md" }) {
   );
 }
 
-/**
- * CONFIRM DIALOG
- * Added: Role="alertdialog" for critical confirmation prompts.
- */
+
 export function ConfirmDialog({
   open,
   onClose,
@@ -142,10 +136,7 @@ export function StatusBadge({ status }) {
   );
 }
 
-/**
- * PAGINATION
- * Added: nav wrapper and aria-labels for icon buttons.
- */
+
 export function Pagination({ page, totalPages, onPage }) {
   if (totalPages <= 1) return null;
   return (
@@ -189,10 +180,7 @@ export function Pagination({ page, totalPages, onPage }) {
   );
 }
 
-/**
- * STAT CARD
- * Added: Keyboard support (Enter key) and focus ring.
- */
+
 export function StatCard({
   label,
   value,
@@ -256,10 +244,6 @@ export function EmptyState({
   );
 }
 
-/**
- * FIELD
- * Added: htmlFor and id link for accessibility.
- */
 export function Field({ label, id, error, children }) {
   return (
     <div className="mb-4">
@@ -268,7 +252,6 @@ export function Field({ label, id, error, children }) {
           {label}
         </label>
       )}
-      {/* Ensure children passed have the matching ID */}
       {children}
       {error && (
         <p className="text-red-500 text-xs mt-1" role="alert">
@@ -355,10 +338,7 @@ export function ClickableText({ children, onClick, className = "" }) {
   );
 }
 
-/**
- * SORT HEADER
- * Added: aria-sort to communicate sorting state to screen readers.
- */
+
 export function SortHeader({ col, label, sortCol, sortDir, onSort }) {
   const active = sortCol === col;
   const ariaSort = active ? (sortDir === "asc" ? "ascending" : "descending") : "none";
