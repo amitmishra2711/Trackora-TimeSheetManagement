@@ -601,32 +601,32 @@ setTotalPages(1);
         <div className="card rounded-none border-none">
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left ">
-              <thead className="bg-gray-50 text-gray-300 text-xs border-b">
-                <tr className="text-gray-300 bg-black">
-                  {!isEmployee && <th className="px-4 py-3 text-xs uppercase tracking-wider text-gray-100 font-bolder">
+              <thead className="bg-gray-400 text-xs border-b">
+                <tr className=" bg-gray-100">
+                  {!isEmployee && <th className="px-4 py-3 text-xs uppercase tracking-wider text-gray-500 font-bolder hover:bg-gray-200 transition-colors cursor-pointer" onClick={() => handleSort("username")}>
                     Employee
                   </th>}
-                  <th className="px-4 py-3 text-xs  uppercase tracking-wider text-gray-100 font-bolder">
+                  <th className="px-4 py-3 text-xs  uppercase tracking-wider text-gray-500 font-bolder hover:bg-gray-200 transition-colors cursor-pointer" onClick={() => handleSort("project")}>
                     Project
                   </th>
-                 <th className="px-4 py-3 text-xs uppercase tracking-wider text-gray-100 font-bolder">
+                 <th className="px-4 py-3 text-xs uppercase tracking-wider text-gray-500 font-bolder hover:bg-gray-200 transition-colors cursor-pointer" onClick={() => handleSort("task")}>
                     TASK
                   </th>
-                  <th className="px-4 py-3 text-xs uppercase tracking-wider text-gray-100 font-bolder">
+                  <th className="px-4 py-3 text-xs uppercase tracking-wider text-gray-500 font-bolder hover:bg-gray-200 transition-colors cursor-pointer" onClick={() => handleSort("date")}>
                     DATE
                   </th>
                   
                  
-                  <th className="px-4 py-3 text-xs uppercase tracking-wider text-gray-100 font-bolder">
+                  <th className="px-4 py-3 text-xs uppercase tracking-wider text-gray-500 font-bolder hover:bg-gray-200 transition-colors cursor-pointer" onClick={() => handleSort("hours")}>
                     HOURS
                   </th>
-                  <th className="px-4 py-3 text-xs uppercase tracking-wider text-gray-100 font-bolder">
+                  <th className="px-4 py-3 text-xs uppercase tracking-wider text-gray-500 font-bolder hover:bg-gray-200 transition-colors cursor-pointer" onClick={() => handleSort("description")}>
                     Description
                   </th>
-                  <th className="px-4 py-3 text-xs uppercase tracking-wider text-gray-100 font-bolder">
+                  <th className="px-4 py-3 text-xs uppercase tracking-wider text-gray-500 font-bolder hover:bg-gray-200 transition-colors cursor-pointer" onClick={() => handleSort("status")}>
                     STATUS
                   </th>
-                    <th className="px-4 py-3 text-xs uppercase tracking-wider text-gray-100 font-bolder">
+                    <th className="px-4 py-3 text-xs uppercase tracking-wider text-gray-500 font-bolder hover:bg-gray-200 transition-colors cursor-pointer" onClick={() => handleSort("action")}>
                     ACTION
                   </th>
                   

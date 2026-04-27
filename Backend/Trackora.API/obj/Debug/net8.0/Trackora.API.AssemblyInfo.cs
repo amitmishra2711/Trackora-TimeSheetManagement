@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Trackora.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ea012d82c05644aa1e6119e0d63f8423c12a5bb5")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+188d62165aaf4d0fde2415138101e162c3b0749e")]
 [assembly: System.Reflection.AssemblyProductAttribute("Trackora.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Trackora.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

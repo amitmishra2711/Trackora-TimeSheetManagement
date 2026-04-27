@@ -23,7 +23,6 @@ namespace Trackora.API.Services
                 .Include(ts => ts.Task)
                 .Where(ts => !ts.IsDeleted);
  
-            // Leader scope — only their teams' members
             if (leaderId.HasValue)
             {
                 var leaderMemberIds = await _db.Teams
@@ -34,7 +33,6 @@ namespace Trackora.API.Services
                 q = q.Where(ts => leaderMemberIds.Contains(ts.UserId));
             }
  
-            // Apply filters (all optional, combined with AND)
             if (filter.EmployeeId.HasValue)
                 q = q.Where(ts => ts.UserId == filter.EmployeeId.Value);
  
@@ -58,18 +56,14 @@ namespace Trackora.API.Services
                           .ToListAsync();
         }
  
-        // ─── Weekly summary calculation ───────────────────────
         private static WeeklySummaryDto BuildSummary(
             List<Models.Timesheet> data, TimesheetFilterDto filter)
         {
-            // Use filter dates if provided, else current month
             var now = DateTime.UtcNow;
             var monthStart = filter.StartDate ?? new DateTime(now.Year, now.Month, 1);
             var monthEnd   = filter.EndDate   ?? new DateTime(now.Year, now.Month,
                 DateTime.DaysInMonth(now.Year, now.Month));
  
-            // Split month into 4 weekly buckets
-            // Week 1: day 1–7, Week 2: 8–14, Week 3: 15–21, Week 4: 22–end
             decimal W(int dayFrom, int dayTo) => data
                 .Where(ts => ts.Date.Month == monthStart.Month &&
                              ts.Date.Year  == monthStart.Year  &&
@@ -88,18 +82,14 @@ namespace Trackora.API.Services
             };
         }
  
-        // ─── Hierarchical grouping: Project → Team → Employee ─
         private async Task<List<ProjectTimesheetGroupDto>> BuildGrouped(
             List<Models.Timesheet> data, int? leaderId)
         {
-            // Build team lookup: teamId → teamName  (via TeamMembers + ProjectTeams)
             var allTeams = await _db.Teams
                 .Include(t => t.TeamMembers)
                 .Where(t => !t.IsDeleted)
                 .ToListAsync();
  
-            // For a given userId + projectId, find which team they belong to
-            // that is also assigned to that project
             var projectTeams = await _db.ProjectTeams
                 .Include(pt => pt.Team)
                     .ThenInclude(t => t.TeamMembers)
@@ -113,7 +103,6 @@ namespace Trackora.API.Services
                     ?.Team;
             }
  
-            // Group by project
             var byProject = data.GroupBy(ts => new { ts.ProjectId, ts.Project.Name });
  
             var result = new List<ProjectTimesheetGroupDto>();
@@ -126,7 +115,6 @@ namespace Trackora.API.Services
                     ProjectName = proj.Key.Name,
                 };
  
-                // Group by team within this project
                 var byTeam = proj
                     .GroupBy(ts => ResolveTeam(ts.UserId, ts.ProjectId))
                     .OrderBy(g => g.Key?.Name ?? "Unassigned");
@@ -135,7 +123,6 @@ namespace Trackora.API.Services
                 {
                     var team = teamGrp.Key;
  
-                    // Filter by leaderId if needed
                     if (leaderId.HasValue && team != null && team.LeaderId != leaderId.Value)
                         continue;
  
@@ -145,14 +132,14 @@ namespace Trackora.API.Services
                         TeamName = team?.Name ?? "Unassigned",
                     };
  
-                    var byEmployee = teamGrp.GroupBy(ts => new { ts.UserId, ts.User.FirstName });
+                    var byEmployee = teamGrp.GroupBy(ts => new { ts.UserId, UserName = $"{ts.User.FirstName} {ts.User.LastName}" });
  
                     foreach (var empGrp in byEmployee)
                     {
                         var empGroup = new EmployeeTimesheetGroupDto
                         {
                             UserId   = empGrp.Key.UserId,
-                            UserName = empGrp.Key.FirstName,
+                            UserName = empGrp.Key.UserName,
                             TotalHours = empGrp.Sum(ts => ts.HoursWorked),
                             Entries = empGrp.Select(ts => new EmployeeTimesheetRowDto
                             {
@@ -183,20 +170,44 @@ namespace Trackora.API.Services
             return result.OrderBy(p => p.ProjectName).ToList();
         }
  
-        // ─── PUBLIC: GetAnalyticsAsync ─────────────────────────
         public async Task<TimesheetAnalyticsDto> GetAnalyticsAsync(
             TimesheetFilterDto filter, int? leaderId = null)
         {
-            var data = await FetchAsync(filter, leaderId);
+            var data    = await FetchAsync(filter, leaderId);
+            var grouped = await BuildGrouped(data, leaderId);
+ 
+            var rows = grouped
+                .SelectMany(p => p.Teams
+                    .SelectMany(t => t.Employees
+                        .SelectMany(e => e.Entries.Select(entry => new EmployeeTimesheetRowDto
+                        {
+                            TimesheetId = entry.TimesheetId,
+                            UserId      = e.UserId,
+                            UserName    = e.UserName,
+                            ProjectId   = p.ProjectId,
+                            ProjectName = p.ProjectName,
+                            TeamId      = t.TeamId,
+                            TeamName    = t.TeamName,
+                            TaskTitle   = entry.TaskTitle,
+                            Date        = entry.Date,
+                            DayOfWeek   = entry.DayOfWeek,
+                            Status      = entry.Status,
+                            HoursWorked = entry.HoursWorked,
+                            Description = entry.Description,
+                        }))))
+                .OrderByDescending(r => r.Date)
+                .ThenByDescending(r => r.TimesheetId)
+                .ToList();
+ 
             return new TimesheetAnalyticsDto
             {
                 Summary      = BuildSummary(data, filter),
-                Grouped      = await BuildGrouped(data, leaderId),
+                Grouped      = grouped,
+                Rows         = rows,
                 TotalRecords = data.Count,
             };
         }
  
-        // ─── PUBLIC: ExportToExcelAsync ────────────────────────
         public async Task<byte[]> ExportToExcelAsync(
             TimesheetFilterDto filter, int? leaderId = null)
         {
@@ -206,7 +217,6 @@ namespace Trackora.API.Services
  
             using var wb = new XLWorkbook();
  
-            // ── Sheet 1: Summary ──────────────────────────────
             var wsSummary = wb.Worksheets.Add("Summary");
             wsSummary.Cell(1, 1).Value = "Trackora – Timesheet Report";
             wsSummary.Cell(1, 1).Style.Font.Bold    = true;
@@ -221,7 +231,6 @@ namespace Trackora.API.Services
             wsSummary.Cell(9, 1).Value = "Week 4 (22+)";  wsSummary.Cell(9, 2).Value = (double)summary.Week4;
             wsSummary.Columns().AdjustToContents();
  
-            // ── Sheet 2: Project-wise ─────────────────────────
             var wsProj = wb.Worksheets.Add("By Project");
             WriteHeader(wsProj, new[] { "Project", "Team", "Employee", "Day", "Date", "Hours", "Task", "Description", "Status" });
             int row = 2;
@@ -242,7 +251,6 @@ namespace Trackora.API.Services
                             wsProj.Cell(row, 9).Value = e.Status;
                             row++;
                         }
-                // Project total row
                 wsProj.Cell(row, 1).Value = $"Project Total: {proj.ProjectName}";
                 wsProj.Cell(row, 6).Value = (double)proj.TotalHours;
                 wsProj.Row(row).Style.Font.Bold = true;
@@ -251,7 +259,6 @@ namespace Trackora.API.Services
             }
             wsProj.Columns().AdjustToContents();
  
-            // ── Sheet 3: Team-wise ────────────────────────────
             var wsTeam = wb.Worksheets.Add("By Team");
             WriteHeader(wsTeam, new[] { "Team", "Employee", "Project", "Day", "Date", "Hours", "Task", "Status" });
             row = 2;
@@ -283,7 +290,6 @@ namespace Trackora.API.Services
             }
             wsTeam.Columns().AdjustToContents();
  
-            // ── Sheet 4: Employee-wise ────────────────────────
             var wsEmp = wb.Worksheets.Add("By Employee");
             WriteHeader(wsEmp, new[] { "Employee", "Project", "Team", "Day", "Date", "Hours", "Task", "Status" });
             row = 2;
@@ -333,5 +339,6 @@ namespace Trackora.API.Services
         }
     }
 }
+
  
 
