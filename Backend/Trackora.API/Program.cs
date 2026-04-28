@@ -100,12 +100,9 @@ app.UseMiddleware<ExceptionMiddleware>();
 
     app.UseSwagger();
     app.UseSwaggerUI(); 
-
 app.UseCors("AllowAll");
 app.UseCors("AllowReact");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-
-
 app.Run();

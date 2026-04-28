@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Trackoraa\\BACKEND\\TRACKORA.API\\Trackora.API.csproj": {}
+    "C:\\Trackoraa\\Backend\\Trackora.API\\Trackora.API.csproj": {}
   },
   "projects": {
-    "C:\\Trackoraa\\BACKEND\\TRACKORA.API\\Trackora.API.csproj": {
+    "C:\\Trackoraa\\Backend\\Trackora.API\\Trackora.API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Trackoraa\\BACKEND\\TRACKORA.API\\Trackora.API.csproj",
+        "projectUniqueName": "C:\\Trackoraa\\Backend\\Trackora.API\\Trackora.API.csproj",
         "projectName": "Trackora.API",
-        "projectPath": "C:\\Trackoraa\\BACKEND\\TRACKORA.API\\Trackora.API.csproj",
+        "projectPath": "C:\\Trackoraa\\Backend\\Trackora.API\\Trackora.API.csproj",
         "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-        "outputPath": "C:\\Trackoraa\\BACKEND\\TRACKORA.API\\obj\\",
+        "outputPath": "C:\\Trackoraa\\Backend\\Trackora.API\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

@@ -237,7 +237,7 @@ function FlatTimesheetTable({ rows, loading, canApprove, onApprove }) {
               <SortTh col="project"  label="Project"      {...thProps} />
               <SortTh col="team"     label="Team"         {...thProps} />
               <SortTh col="task"     label="Task"         {...thProps} />
-              <SortTh col="date"     label="Date & Time"  {...thProps} />
+              <SortTh col="date"     label="Date"  {...thProps} />
               <SortTh col="day"      label="Day"          {...thProps} />
               <SortTh col="status"   label="Status"       {...thProps} />
               <SortTh  col="hours"    label="Hours"        {...thProps} className="text-right" />
