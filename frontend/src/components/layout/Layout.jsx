@@ -45,7 +45,12 @@ export default function Layout({ children }) {
   const nav = navConfig[user?.role] || []
   const initials = `${user?.firstName?.[0] || ''}${user?.lastName?.[0] || ''}`.toUpperCase()
 
-  const handleLogout = () => { logout(); navigate('/login') }
+  const handleLogout = () => { 
+    const isLogout =confirm("Do you really want to logout");
+    if(isLogout){
+    logout(); navigate('/')
+    }
+  }
 
   const Sidebar = ({ mobile = false }) => (
     <aside className={`flex flex-col h-full bg-white border-r border-gray-200 transition-all duration-300
